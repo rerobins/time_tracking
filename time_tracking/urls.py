@@ -2,5 +2,5 @@ from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 
 urlpatterns = patterns('',
-    url(r'^license/', TemplateView.as_view(template_name="license.html"))
+    url(r'^license/', TemplateView.as_view(template_name="time_tracking/license.html"))
 )
