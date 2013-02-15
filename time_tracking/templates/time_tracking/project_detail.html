@@ -1,0 +1,31 @@
+{% extends "time_tracking/base.html" %}
+
+{% block content %}
+
+<h1>Project Detail</h1>
+
+<p>Name: {{object.name}}</p>
+<p>Slug: {{object.slug}}</p>
+
+<h1>Open Records</h1>
+
+{% for record in open_records %}
+    <p>Record: {{ record.start_time }} <a href="{% url record_delete_view object.slug record.pk %}">Delete</a></p>
+{% empty %}
+    <p>Empty</p>
+
+{% endfor %}
+
+<h1>Closed Records</h1>
+
+{% for record in closed_records %}
+    <p>Record: {{ record.start_time }} <a href="">Delete</a></p>
+{% empty %}
+    <p>Empty</p>
+
+{% endfor %}
+
+<p><a href="{% url record_create_view object.slug %}">Add New Records</a></p>
+<p><a href="{% url project_list_view %}">Back to Project List</a></p>
+
+{% endblock %}

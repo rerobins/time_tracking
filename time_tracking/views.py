@@ -1,1 +1,164 @@
-# Create your views here.
+from django.views.generic import CreateView, DetailView, DeleteView
+from django.template.defaultfilters import slugify
+
+from django.shortcuts import get_object_or_404
+
+from time_tracking.forms import ProjectForm, RecordForm
+from time_tracking.models import Project, Record
+
+
+class ProjectCreateView(CreateView):
+    """
+        Specialized view that will create new project objects.
+    """
+    form_class = ProjectForm
+    model = Project
+
+    def form_valid(self, form):
+        """
+            Sets the slug to the correct value based on the name of the object
+            that was just created.
+        """
+        form.instance.owner = self.request.user
+
+        self.object = form.save(commit=False)
+        self.object.slug = slugify(self.object.name)
+
+        self.object.save()
+
+        return super(ProjectCreateView, self).form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        self.initial['owner'] = request.user
+        return super(ProjectCreateView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.user = request.user
+        self.initial['owner'] = request.user
+        return super(ProjectCreateView, self).post(request, *args, **kwargs)
+
+
+class ProjectDetailView(DetailView):
+    """
+        Overriding the Detail View generic class to provide the record
+        information that is to be displayed along with the rest of the
+        project details.
+    """
+
+    model = Project
+    slug_url_kwarg = 'project_slug'
+
+    def get_query_set(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return Project.objects.filter(owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context for:
+                Closed Records - records that have an end time
+                Open Records - records that do not have an ned time.
+        """
+        context = super(ProjectDetailView, self).get_context_data(**kwargs)
+
+        ## Need to fetch the records that are associated with this project.
+        open_records = Record.objects.filter(project=self.object,
+            end_time=None)
+
+        closed_records = Record.objects.filter(
+            project=self.object
+        ).exclude(
+            end_time=None)
+
+        context['closed_records'] = closed_records
+        context['open_records'] = open_records
+
+        return context
+
+
+class RecordCreateView(CreateView):
+    """
+        Overrideing the create view in order to store and retrieve the context
+        data of the project that the record belongs to.
+    """
+    form_class = RecordForm
+    model = Record
+
+    def post(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the post
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        return super(RecordCreateView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        return super(RecordCreateView, self).get(request, *args, **kwargs)
+
+    def get_success_url(self):
+        """
+            Want the display to be sent back to the URL of the project on
+            success.
+        """
+        return self.project.get_absolute_url()
+
+    def form_valid(self, form):
+        """
+            Sets the slug to the correct value based on the name of the object
+            that was just created.
+        """
+        form.instance.owner = self.owner
+        form.instance.project = self.project
+        return super(RecordCreateView, self).form_valid(form)
+
+
+class RecordDeleteView(DeleteView):
+    """
+        Deletes a record from a project.
+    """
+    model = Record
+
+    def post(self, request, *args, **kwargs):
+        """
+            Wants to fetch the project that the record is supposed to be
+            associated with.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        return super(RecordDeleteView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Wants to fetch the project that the record is supposed to be
+            associated with.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        return super(RecordDeleteView, self).get(request, *args, **kwargs)
+
+    def get_query_set(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return Record.objects.filter(project=self.project, owner=self.user)
+
+    def get_success_url(self):
+        return self.project.get_absolute_url();
