@@ -1,4 +1,6 @@
 from django.views.generic import CreateView, DetailView, DeleteView
+from django.views.generic import RedirectView
+from django.views.generic.detail import SingleObjectMixin
 from django.template.defaultfilters import slugify
 
 from django.shortcuts import get_object_or_404
@@ -161,4 +163,31 @@ class RecordDeleteView(DeleteView):
         return Record.objects.filter(project=self.project, owner=self.user)
 
     def get_success_url(self):
-        return self.project.get_absolute_url();
+        return self.project.get_absolute_url()
+
+
+class RecordCloseView(RedirectView, SingleObjectMixin):
+    """
+        View that will close the record by placing the end_time into the record
+        value.
+    """
+    model = Record
+
+    def get_query_set(self):
+        return Record.objects.filter(project=self.project, owner=self.user)
+
+    def get_redirect_url(self):
+        return self.project.get_absolute_url()
+
+    def get(self, request, *args, **kwargs):
+
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+
+        self.object = self.get_object()
+
+        self.object.close()
+
+        return super(RecordCloseView, self).get(request, self.args, self.kwargs)

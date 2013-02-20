@@ -41,5 +41,7 @@ class RecordForm(ModelForm):
 
     class Meta:
         model = Record
-        fields = ('start_time', 'end_time', 'brief_description', 'categories',
-            'location')
+#        fields = ('start_time', 'end_time',
+#                    'brief_description', 'categories',
+#                    'location')
+        fields = ('start_time','end_time','brief_description')

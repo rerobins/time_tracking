@@ -1,6 +1,7 @@
 from django.db import models
 from django_extras.contrib.auth.models import SingleOwnerMixin
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Project(SingleOwnerMixin, models.Model):
@@ -53,5 +54,11 @@ class Record(SingleOwnerMixin, models.Model):
     end_time = models.DateTimeField(null=True, blank=True)
     categories = models.ManyToManyField(Category, blank=True)
     location = models.ForeignKey(Location, blank=True, null=True)
+
+    def close(self):
+        if self.end_time is None:
+            self.end_time = timezone.now()
+            self.save()
+
 
 
