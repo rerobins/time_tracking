@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<p>Really delete object?</p>
+<p>Really delete {{ object }}?</p>
 
 <form action="" method="post">{% csrf_token %}
     <input type="submit" value="Yes">

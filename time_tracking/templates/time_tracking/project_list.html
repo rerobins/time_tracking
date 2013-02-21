@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<p><a href="{% url project_create_view %}">Create Project</a>
+
 {% for o in object_list %}
 
     <p><a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}</p>

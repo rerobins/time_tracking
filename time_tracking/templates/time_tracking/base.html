@@ -1,2 +1,23 @@
 {% extends "base.html" %}
 
+{% block title %}
+Time Tracker - Main
+{% endblock %}
+
+{% block menu %}
+
+<p><b>Projects</b></p>
+{% if owned_projects %}
+    <ul>
+        {% for o in owned_projects %}
+
+            <li><a href="{{ o.get_absolute_url }}">{{o.name}}</a></li>
+
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>None</p>
+{% endif %}
+
+
+{% endblock %}
