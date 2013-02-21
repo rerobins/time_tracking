@@ -23,7 +23,8 @@
 <h1>Closed Records</h1>
 
 {% for record in closed_records %}
-    <p>Record: {{ record.start_time }} -> {{ record.end_time }}
+    <p>Record: {{ record.start_time }} -> {{ record.end_time }} {{ record.start_time|timesince:record.end_time}}
+        {{ record.duration }}
         <a href="{% url record_delete_view object.slug record.pk %}">Delete</a>
         <a href="{% url record_edit_view object.slug record.pk %}">Edit</a>
     </p>

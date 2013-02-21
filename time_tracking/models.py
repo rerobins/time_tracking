@@ -1,3 +1,22 @@
+"""
+time_tracking provides time tracking capabilities to be used in the
+django framework.
+Copyright (C) 2013 Robert Robinson rerobins@meerkatlabs.org
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 from django.db import models
 from django_extras.contrib.auth.models import SingleOwnerMixin
 from django.contrib.auth.models import User
@@ -56,9 +75,23 @@ class Record(SingleOwnerMixin, models.Model):
     location = models.ForeignKey(Location, blank=True, null=True)
 
     def close(self):
+        """
+            Close the record as a completed activity, but only if the record
+            doesn't already have an end time defined.
+        """
         if self.end_time is None:
             self.end_time = timezone.now()
             self.save()
 
+    def duration(self):
+        """
+            Determine the amount of time that has occurred in this record value
+            in seconds
+        """
+        if self.end_time is None:
+            return 0
+        else:
+            duration = self.end_time - self.start_time
+            return duration.seconds + duration.microseconds / 1E6
 
 
