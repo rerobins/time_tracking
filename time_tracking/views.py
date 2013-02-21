@@ -1,7 +1,27 @@
+"""
+time_tracking provides time tracking capabilities to be used in the
+django framework.
+Copyright (C) 2013 Robert Robinson rerobins@meerkatlabs.org
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 from django.views.generic import CreateView, DetailView, DeleteView, UpdateView
 from django.views.generic import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 from django.template.defaultfilters import slugify
+from django.core.urlresolvers import reverse
 
 from django.shortcuts import get_object_or_404
 
@@ -44,6 +64,83 @@ class ProjectCreateView(CreateView):
         self.user = request.user
         self.initial['owner'] = request.user
         return super(ProjectCreateView, self).post(request, *args, **kwargs)
+
+
+class ProjectEditView(UpdateView):
+    """
+        Specialized view that will edit project objects.
+    """
+    form_class = ProjectForm
+    model = Project
+    slug_url_kwarg = 'project_slug'
+
+    def form_valid(self, form):
+        """
+            Sets the slug to the correct value based on the name of the object
+            that was just created.
+        """
+        form.instance.owner = self.request.user
+
+        self.object = form.save(commit=False)
+        self.object.slug = slugify(self.object.name)
+
+        self.object.save()
+
+        return super(ProjectEditView, self).form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Override the get so that the initial object's  owner can be set to
+            the request user.
+        """
+        self.initial['owner'] = request.user
+        return super(ProjectEditView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.user = request.user
+        self.initial['owner'] = request.user
+        return super(ProjectEditView, self).post(request, *args, **kwargs)
+
+    def get_query_set(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return Project.objects.filter(owner=self.user)
+
+
+class ProjectDeleteView(DeleteView):
+    """
+        Deletes a project.
+    """
+    model = Project
+    slug_url_kwarg = 'project_slug'
+
+    def post(self, request, *args, **kwargs):
+        """
+            Wants to fetch the project that the record is supposed to be
+            associated with.
+        """
+        self.owner = request.user
+        return super(ProjectDeleteView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Wants to fetch the project that the record is supposed to be
+            associated with.
+        """
+        self.owner = request.user
+        return super(ProjectDeleteView, self).get(request, *args, **kwargs)
+
+    def get_query_set(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return Project.objects.filter(owner=self.user)
+
+    def get_success_url(self):
+        return reverse('project_list_view')
 
 
 class ProjectDetailView(DetailView):

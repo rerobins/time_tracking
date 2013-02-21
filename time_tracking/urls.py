@@ -1,9 +1,29 @@
+"""
+time_tracking provides time tracking capabilities to be used in the
+django framework.
+Copyright (C) 2013 Robert Robinson rerobins@meerkatlabs.org
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView, ListView
 from django.contrib.auth.decorators import login_required
 
 from time_tracking.models import Project
 from time_tracking.views import ProjectCreateView, ProjectDetailView
+from time_tracking.views import ProjectEditView, ProjectDeleteView
 from time_tracking.views import RecordCreateView, RecordDeleteView
 from time_tracking.views import RecordCloseView, RecordEditView
 
@@ -19,9 +39,15 @@ urlpatterns = patterns('',
     url(r'^add/project/$', login_required(
         ProjectCreateView.as_view()),
             name='project_create_view'),
-    url(r'^projects/(?P<project_slug>[^/]+)/$', login_required(
+    url(r'^project/(?P<project_slug>[^/]+)/$', login_required(
         ProjectDetailView.as_view()),
         name='project_detail_view'),
+    url(r'^edit/project/(?P<project_slug>[^/]+)/$', login_required(
+        ProjectEditView.as_view()),
+        name='project_edit_view'),
+    url(r'^delete/project/(?P<project_slug>[^/]+)/$', login_required(
+        ProjectDeleteView.as_view()),
+        name='project_delete_view'),
 
     ## Record manipulation
     url(r'^projects/(?P<project_slug>[^/]+)/add/$',
