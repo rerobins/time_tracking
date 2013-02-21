@@ -13,6 +13,7 @@
     <p>Record: {{ record.start_time }}
         <a href="{% url record_delete_view object.slug record.pk %}">Delete</a>
         <a href="{% url record_close_view object.slug record.pk %}">Close</a>
+        <a href="{% url record_edit_view object.slug record.pk %}">Edit</a>
     </p>
 {% empty %}
     <p>Empty</p>
@@ -22,7 +23,10 @@
 <h1>Closed Records</h1>
 
 {% for record in closed_records %}
-    <p>Record: {{ record.start_time }} -> {{ record.end_time }} <a href="{% url record_delete_view object.slug record.pk %}">Delete</a></p>
+    <p>Record: {{ record.start_time }} -> {{ record.end_time }}
+        <a href="{% url record_delete_view object.slug record.pk %}">Delete</a>
+        <a href="{% url record_edit_view object.slug record.pk %}">Edit</a>
+    </p>
 {% empty %}
     <p>Empty</p>
 

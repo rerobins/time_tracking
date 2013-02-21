@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, DetailView, DeleteView
+from django.views.generic import CreateView, DetailView, DeleteView, UpdateView
 from django.views.generic import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 from django.template.defaultfilters import slugify
@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 
 from time_tracking.forms import ProjectForm, RecordForm
 from time_tracking.models import Project, Record
+
+from django.utils import timezone
 
 
 class ProjectCreateView(CreateView):
@@ -31,6 +33,10 @@ class ProjectCreateView(CreateView):
         return super(ProjectCreateView, self).form_valid(form)
 
     def get(self, request, *args, **kwargs):
+        """
+            Override the get so that the initial object's  owner can be set to
+            the request user.
+        """
         self.initial['owner'] = request.user
         return super(ProjectCreateView, self).get(request, *args, **kwargs)
 
@@ -108,6 +114,7 @@ class RecordCreateView(CreateView):
         self.project = get_object_or_404(Project,
             slug=self.kwargs.get('project_slug', None),
             owner=self.owner)
+        self.initial['start_time'] = timezone.now()
         return super(RecordCreateView, self).get(request, *args, **kwargs)
 
     def get_success_url(self):
@@ -125,6 +132,52 @@ class RecordCreateView(CreateView):
         form.instance.owner = self.owner
         form.instance.project = self.project
         return super(RecordCreateView, self).form_valid(form)
+
+
+class RecordEditView(UpdateView):
+    """
+        Overrideing the create view in order to store and retrieve the context
+        data of the project that the record belongs to.
+    """
+    form_class = RecordForm
+    model = Record
+
+    def post(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the post
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        return super(RecordEditView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        self.initial['start_time'] = timezone.now()
+        return super(RecordEditView, self).get(request, *args, **kwargs)
+
+    def get_query_set(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return Record.objects.filter(project=self.project, owner=self.user)
+
+    def get_success_url(self):
+        """
+            Want the display to be sent back to the URL of the project on
+            success.
+        """
+        return self.project.get_absolute_url()
 
 
 class RecordDeleteView(DeleteView):
@@ -174,13 +227,24 @@ class RecordCloseView(RedirectView, SingleObjectMixin):
     model = Record
 
     def get_query_set(self):
+        """
+            Return the query set that will only return the records owned by the
+            current user and referenced by the project.
+        """
         return Record.objects.filter(project=self.project, owner=self.user)
 
-    def get_redirect_url(self):
+    def get_redirect_url(self, **kwargs):
+        """
+            After done manipulating the object want to redirect back to the
+            url of the project that was originally being displayed.
+        """
         return self.project.get_absolute_url()
 
     def get(self, request, *args, **kwargs):
-
+        """
+            Set up some additional class values, and then close the record
+            object before redirecting back to the service.
+        """
         self.owner = request.user
         self.project = get_object_or_404(Project,
             slug=self.kwargs.get('project_slug', None),
@@ -190,4 +254,4 @@ class RecordCloseView(RedirectView, SingleObjectMixin):
 
         self.object.close()
 
-        return super(RecordCloseView, self).get(request, self.args, self.kwargs)
+        return super(RecordCloseView, self).get(request, *args, **kwargs)

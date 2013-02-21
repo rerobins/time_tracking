@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from time_tracking.models import Project
 from time_tracking.views import ProjectCreateView, ProjectDetailView
 from time_tracking.views import RecordCreateView, RecordDeleteView
-from time_tracking.views import RecordCloseView
+from time_tracking.views import RecordCloseView, RecordEditView
 
 urlpatterns = patterns('',
 
@@ -33,6 +33,9 @@ urlpatterns = patterns('',
     url(r'^projects/(?P<project_slug>[^/]+)/close/(?P<pk>\d+)/$',
         login_required(RecordCloseView.as_view()),
         name='record_close_view'),
+    url(r'^projects/(?P<project_slug>[^/]+)/edit/(?P<pk>\d+)/$',
+        login_required(RecordEditView.as_view()),
+        name='record_edit_view'),
 
     ## Category manipulation
 
