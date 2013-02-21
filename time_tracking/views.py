@@ -21,6 +21,7 @@ from django.views.generic import CreateView, DetailView, DeleteView, UpdateView
 from django.views.generic import RedirectView
 from django.views.generic.detail import SingleObjectMixin
 from django.template.defaultfilters import slugify
+from django.core.urlresolvers import reverse
 
 from django.shortcuts import get_object_or_404
 
@@ -106,6 +107,40 @@ class ProjectEditView(UpdateView):
             user that is making the request.
         """
         return Project.objects.filter(owner=self.user)
+
+
+class ProjectDeleteView(DeleteView):
+    """
+        Deletes a project.
+    """
+    model = Project
+    slug_url_kwarg = 'project_slug'
+
+    def post(self, request, *args, **kwargs):
+        """
+            Wants to fetch the project that the record is supposed to be
+            associated with.
+        """
+        self.owner = request.user
+        return super(ProjectDeleteView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Wants to fetch the project that the record is supposed to be
+            associated with.
+        """
+        self.owner = request.user
+        return super(ProjectDeleteView, self).get(request, *args, **kwargs)
+
+    def get_query_set(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return Project.objects.filter(owner=self.user)
+
+    def get_success_url(self):
+        return reverse('project_list_view')
 
 
 class ProjectDetailView(DetailView):
