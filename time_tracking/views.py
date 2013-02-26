@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from django.views.generic import CreateView, DetailView, DeleteView, UpdateView
-from django.views.generic import RedirectView
+from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
@@ -347,12 +347,13 @@ class RecordDeleteView(DeleteView):
         return self.project.get_absolute_url()
 
 
-class RecordCloseView(RedirectView, SingleObjectMixin):
+class RecordCloseView(View, SingleObjectMixin):
     """
         View that will close the record by placing the end_time into the record
         value.
     """
     model = Record
+    return_view = ProjectDetailView
 
     def get_query_set(self):
         """
@@ -382,7 +383,9 @@ class RecordCloseView(RedirectView, SingleObjectMixin):
 
         self.object.close()
 
-        return super(RecordCloseView, self).get(request, *args, **kwargs)
+        return_view = self.return_view()
+
+        return return_view.dispatch(request, *args, **kwargs)
 
 
 class CategoryCreateView(CreateView):
@@ -553,3 +556,21 @@ class CategoryDetailView(DetailView):
             user that is making the request.
         """
         return Category.objects.filter(project=self.project)
+
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context for:
+                Closed Records - records that have an end time
+                Open Records - records that do not have an ned time.
+        """
+        context = super(CategoryDetailView, self).get_context_data(**kwargs)
+
+        ## Need to fetch the records that are associated with this project.
+        open_records = self.object.record_set.filter(end_time=None)
+
+        closed_records = self.object.record_set.exclude(end_time=None)
+
+        context['closed_records'] = closed_records
+        context['open_records'] = open_records
+
+        return context
