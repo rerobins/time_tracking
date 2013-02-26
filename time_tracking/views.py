@@ -90,13 +90,17 @@ class ProjectEditView(UpdateView):
 
     def get(self, request, *args, **kwargs):
         """
-            Override the get so that the initial object's  owner can be set to
+            Override the get so that the initial object's owner can be set to
             the request user.
         """
         self.initial['owner'] = request.user
         return super(ProjectEditView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        """
+            Override the post so that the initial object's owner can be set to
+            the request user
+        """
         self.user = request.user
         self.initial['owner'] = request.user
         return super(ProjectEditView, self).post(request, *args, **kwargs)
@@ -226,7 +230,6 @@ class RecordCreateView(CreateView):
             Sets the slug to the correct value based on the name of the object
             that was just created.
         """
-        form.instance.owner = self.owner
         form.instance.project = self.project
         return super(RecordCreateView, self).form_valid(form)
 
@@ -267,7 +270,7 @@ class RecordEditView(UpdateView):
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
         """
-        return Record.objects.filter(project=self.project, owner=self.user)
+        return Record.objects.filter(project=self.project)
 
     def get_success_url(self):
         """
@@ -310,7 +313,7 @@ class RecordDeleteView(DeleteView):
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
         """
-        return Record.objects.filter(project=self.project, owner=self.user)
+        return Record.objects.filter(project=self.project)
 
     def get_success_url(self):
         return self.project.get_absolute_url()
@@ -328,7 +331,7 @@ class RecordCloseView(RedirectView, SingleObjectMixin):
             Return the query set that will only return the records owned by the
             current user and referenced by the project.
         """
-        return Record.objects.filter(project=self.project, owner=self.user)
+        return Record.objects.filter(project=self.project)
 
     def get_redirect_url(self, **kwargs):
         """

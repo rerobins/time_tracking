@@ -18,16 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from django.db import models
-from django_extras.contrib.auth.models import SingleOwnerMixin
 from django.contrib.auth.models import User
 from django.utils import timezone
 
 
-class Project(SingleOwnerMixin, models.Model):
+class Project(models.Model):
     """
         Basic Project object that will group a selection of time records
         together.
     """
+    owner = models.ForeignKey(User)
     name = models.CharField(max_length=50)
     slug = models.SlugField(editable=False)
 
@@ -46,22 +46,23 @@ class Category(models.Model):
     """
         Category that will allow for the type of work to be documented.
     """
-    owner = models.ForeignKey(User)
+    project = models.ForeignKey(Project)
     name = models.CharField(max_length=50)
     slug = models.SlugField(editable=False)
 
 
-class Location(SingleOwnerMixin, models.Model):
+class Location(models.Model):
     """
         Location that can be applied to records to show that the time was spent
         in a specific location.
     """
+    owner = models.ForeignKey(User)
     name = models.CharField(max_length=50)
     slug = models.SlugField(editable=False)
     location = models.CharField(max_length=255)
 
 
-class Record(SingleOwnerMixin, models.Model):
+class Record(models.Model):
     """
         Model object that will contain information about the start times of
         work on a project and the duration of the amount of time that the
@@ -71,7 +72,7 @@ class Record(SingleOwnerMixin, models.Model):
     brief_description = models.CharField(max_length=255, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True, blank=True)
-    categories = models.ManyToManyField(Category, blank=True)
+    categories = models.ForeignKey(Category, null=True, blank=True)
     location = models.ForeignKey(Location, blank=True, null=True)
 
     def close(self):
