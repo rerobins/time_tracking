@@ -50,6 +50,17 @@ class Category(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(editable=False)
 
+    class Meta:
+        unique_together = (('slug', 'project'),)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('category_detail_view', (), {'project_slug': self.project.slug,
+            'category_slug': self.slug})
+
+    def __unicode__(self):
+        return self.name
+
 
 class Location(models.Model):
     """
@@ -72,7 +83,7 @@ class Record(models.Model):
     brief_description = models.CharField(max_length=255, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True, blank=True)
-    categories = models.ForeignKey(Category, null=True, blank=True)
+    category = models.ForeignKey(Category, null=True, blank=True)
     location = models.ForeignKey(Location, blank=True, null=True)
 
     def close(self):
@@ -94,5 +105,3 @@ class Record(models.Model):
         else:
             duration = self.end_time - self.start_time
             return duration.seconds + duration.microseconds / 1E6
-
-

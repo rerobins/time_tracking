@@ -24,6 +24,8 @@ from django.contrib.auth.decorators import login_required
 from time_tracking.models import Project
 from time_tracking.views import ProjectCreateView, ProjectDetailView
 from time_tracking.views import ProjectEditView, ProjectDeleteView
+from time_tracking.views import CategoryCreateView, CategoryDetailView
+from time_tracking.views import CategoryEditView, CategoryDeleteView
 from time_tracking.views import RecordCreateView, RecordDeleteView
 from time_tracking.views import RecordCloseView, RecordEditView
 
@@ -64,6 +66,21 @@ urlpatterns = patterns('',
         name='record_edit_view'),
 
     ## Category manipulation
+    url(r'^add/project/(?P<project_slug>[^/]+)/category/$', login_required(
+        CategoryCreateView.as_view()),
+            name='category_create_view'),
+    url(r'^project/(?P<project_slug>[^/]+)/category/'
+        + '(?P<category_slug>[^/]+)/$', login_required(
+        CategoryDetailView.as_view()),
+        name='category_detail_view'),
+    url(r'^edit/project/(?P<project_slug>[^/]+)/category/'
+        + '(?P<category_slug>[^/]+)/$', login_required(
+        CategoryEditView.as_view()),
+        name='category_edit_view'),
+    url(r'^delete/project/(?P<project_slug>[^/]+)/category/'
+        + '(?P<category_slug>[^/]+)/$', login_required(
+        CategoryDeleteView.as_view()),
+        name='category_delete_view'),
 
     ## Location manipulation
 

@@ -1,0 +1,20 @@
+{% extends "time_tracking/base.html" %}
+
+{% block content %}
+
+<h1>Category Detail</h1>
+
+<p>Name: {{object.name}}</p>
+<p>Slug: {{object.slug}}</p>
+<p>
+    <a href="{% url category_edit_view object.project.slug object.slug %}">Edit</a>
+    <a href="{% url category_delete_view object.project.slug object.slug %}">Delete</a>
+</p>
+
+<h1>Open Records</h1>
+
+
+
+<p><a href="{% url project_detail_view object.project.slug %}">Back to Project</a></p>
+
+{% endblock %}

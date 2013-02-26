@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
-from time_tracking.models import Project, Record
+from time_tracking.models import Project, Record, Category
 
 
 class ProjectForm(ModelForm):
@@ -62,4 +62,34 @@ class RecordForm(ModelForm):
 #        fields = ('start_time', 'end_time',
 #                    'brief_description', 'categories',
 #                    'location')
-        fields = ('start_time','end_time','brief_description')
+        fields = ('start_time', 'end_time', 'brief_description', 'category')
+
+
+class CategoryForm(ModelForm):
+    """
+        Form that will allow for the manipulation of the category objects.
+    """
+
+    def clean(self):
+        """
+            Overriden to validate the model before it is saved to the database,
+            want to make sure that there are not two projects owned by the same
+            user that have the same name.
+        """
+        cleaned_data = self.cleaned_data
+
+        ## Make sure that there isn' already a project with the name requested
+        ## owned by that user.
+        try:
+            Category.objects.get(name=cleaned_data['name'],
+                owner=self.initial['project'])
+        except:
+            pass
+        else:
+            raise ValidationError("Category with this name already exists")
+
+        return cleaned_data
+
+    class Meta:
+        model = Category
+        fields = ('name',)

@@ -25,8 +25,8 @@ from django.core.urlresolvers import reverse
 
 from django.shortcuts import get_object_or_404
 
-from time_tracking.forms import ProjectForm, RecordForm
-from time_tracking.models import Project, Record
+from time_tracking.forms import ProjectForm, RecordForm, CategoryForm
+from time_tracking.models import Project, Record, Category
 
 from django.utils import timezone
 
@@ -54,13 +54,17 @@ class ProjectCreateView(CreateView):
 
     def get(self, request, *args, **kwargs):
         """
-            Override the get so that the initial object's  owner can be set to
+            Override the get so that the initial object's owner can be set to
             the request user.
         """
         self.initial['owner'] = request.user
         return super(ProjectCreateView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        """
+            Override the post so that the initial object's owner can be set to
+            the request user.
+        """
         self.user = request.user
         self.initial['owner'] = request.user
         return super(ProjectCreateView, self).post(request, *args, **kwargs)
@@ -218,6 +222,19 @@ class RecordCreateView(CreateView):
         self.initial['start_time'] = timezone.now()
         return super(RecordCreateView, self).get(request, *args, **kwargs)
 
+    def get_form(self, form_class):
+        """
+            Returns an instance of the form to be used in this view.  Overriden
+            to limit the categories that are going to be used to the ones that
+            are allowed in the currently edited project.
+        """
+        form = super(RecordCreateView, self).get_form(form_class)
+
+        form.fields['category'].queryset = Category.objects.filter(
+            project=self.project)
+
+        return form
+
     def get_success_url(self):
         """
             Want the display to be sent back to the URL of the project on
@@ -264,6 +281,17 @@ class RecordEditView(UpdateView):
             owner=self.owner)
         self.initial['start_time'] = timezone.now()
         return super(RecordEditView, self).get(request, *args, **kwargs)
+
+    def get_form(self, form_class):
+        """
+        Returns an instance of the form to be used in this view.
+        """
+        form = super(RecordEditView, self).get_form(form_class)
+
+        form.fields['category'].queryset = Category.objects.filter(
+            project=self.project)
+
+        return form
 
     def get_query_set(self):
         """
@@ -355,3 +383,173 @@ class RecordCloseView(RedirectView, SingleObjectMixin):
         self.object.close()
 
         return super(RecordCloseView, self).get(request, *args, **kwargs)
+
+
+class CategoryCreateView(CreateView):
+    """
+        Overrideing the create view in order to store and retrieve the context
+        data of the project that the record belongs to.
+    """
+    form_class = CategoryForm
+    model = Category
+
+    def post(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the post
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        self.initial['project'] = self.project
+        return super(CategoryCreateView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        self.initial['project'] = self.project
+        return super(CategoryCreateView, self).get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """
+            Sets the slug to the correct value based on the name of the object
+            that was just created.
+        """
+        form.instance.project = self.project
+
+        self.object = form.save(commit=False)
+        self.object.slug = slugify(self.object.name)
+
+        self.object.save()
+        return super(CategoryCreateView, self).form_valid(form)
+
+
+class CategoryEditView(UpdateView):
+    """
+        Overrideing the create view in order to store and retrieve the context
+        data of the project that the record belongs to.
+    """
+    form_class = CategoryForm
+    model = Category
+    slug_url_kwarg = 'category_slug'
+
+    def post(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the post
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        self.initial['project'] = self.project
+        return super(CategoryEditView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        self.initial['project'] = self.project
+        return super(CategoryEditView, self).get(request, *args, **kwargs)
+
+    def get_query_set(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return Category.objects.filter(project=self.project)
+
+    def form_valid(self, form):
+        """
+            Sets the slug to the correct value based on the name of the object
+            that was just created.
+        """
+        form.instance.project = self.project
+
+        self.object = form.save(commit=False)
+        self.object.slug = slugify(self.object.name)
+
+        self.object.save()
+        return super(CategoryEditView, self).form_valid(form)
+
+
+class CategoryDeleteView(DeleteView):
+    """
+        Deletes a record from a project.
+    """
+    model = Category
+    slug_url_kwarg = 'category_slug'
+
+    def post(self, request, *args, **kwargs):
+        """
+            Wants to fetch the project that the record is supposed to be
+            associated with.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        return super(CategoryDeleteView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Wants to fetch the project that the record is supposed to be
+            associated with.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        return super(CategoryDeleteView, self).get(request, *args, **kwargs)
+
+    def get_query_set(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return Category.objects.filter(project=self.project)
+
+    def get_success_url(self):
+        return self.project.get_absolute_url()
+
+
+class CategoryDetailView(DetailView):
+    """
+        Overriding the Detail View generic class to provide the record
+        information that is to be displayed along with the rest of the
+        project details.
+    """
+
+    model = Category
+    slug_url_kwarg = 'category_slug'
+
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+
+        return super(CategoryDetailView, self).get(request, *args, **kwargs)
+
+    def get_query_set(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return Category.objects.filter(project=self.project)
