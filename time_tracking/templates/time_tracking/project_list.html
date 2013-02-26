@@ -2,9 +2,17 @@
 
 {% block content %}
 
-<p><a href="{% url project_create_view %}">Create Project</a>
+<p><a href="{% url project_create_view %}">Create Project</a></p>
 
-{% for o in object_list %}
+<h1>Active Projects</h1>
+{% for o in active_projects %}
+
+    <p><a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}</p>
+
+{% endfor %}
+
+<h1>Deactive Projects</h1>
+{% for o in deactive_projects %}
 
     <p><a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}</p>
 

@@ -49,7 +49,7 @@ class ProjectForm(ModelForm):
 
     class Meta:
         model = Project
-        fields = ('name',)
+        fields = ('name', 'active', )
 
 
 class RecordForm(ModelForm):

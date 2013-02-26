@@ -7,9 +7,9 @@ Time Tracker - Main
 {% block menu %}
 
 <p><b>Projects</b></p>
-{% if owned_projects %}
+{% if active_projects %}
     <ul>
-        {% for o in owned_projects %}
+        {% for o in active_projects %}
 
             <li><a href="{{ o.get_absolute_url }}">{{o.name}}</a></li>
 

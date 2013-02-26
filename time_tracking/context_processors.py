@@ -29,8 +29,8 @@ def time_tracker(request):
     return_value = {}
 
     if request.user.is_authenticated():
-        projects = Project.objects.filter(owner=request.user)
-        return_value['owned_projects'] = projects
+        projects = Project.objects.filter(owner=request.user, active=True)
+        return_value['active_projects'] = projects
 
     return return_value
 

@@ -18,12 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from django.conf.urls import patterns, url
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-from time_tracking.models import Project
 from time_tracking.views import ProjectCreateView, ProjectDetailView
 from time_tracking.views import ProjectEditView, ProjectDeleteView
+from time_tracking.views import ProjectListView
 from time_tracking.views import CategoryCreateView, CategoryDetailView
 from time_tracking.views import CategoryEditView, CategoryDeleteView
 from time_tracking.views import RecordCreateView, RecordDeleteView
@@ -36,7 +36,7 @@ urlpatterns = patterns('',
         TemplateView.as_view(template_name="time_tracking/license.html")),
 
     ## Project manipulation
-    url(r'^projects/$', login_required(ListView.as_view(model=Project)),
+    url(r'^projects/$', login_required(ProjectListView.as_view()),
         name='project_list_view'),
     url(r'^add/project/$', login_required(
         ProjectCreateView.as_view()),

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from django.views.generic import CreateView, DetailView, DeleteView, UpdateView
-from django.views.generic import View
+from django.views.generic import View, ListView
 from django.views.generic.detail import SingleObjectMixin
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
@@ -30,6 +30,34 @@ from time_tracking.models import Project, Record, Category
 
 from django.utils import timezone
 
+
+class ProjectListView(ListView):
+    """
+        List view that will display a list of all of the projects.
+    """
+
+    model = Project
+    context_object_name = 'active_projects'
+
+    def get_queryset(self):
+        """
+            Return the list of active projects to display.
+        """
+        return Project.objects.filter(active=True, owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(ProjectListView, self).get_context_data(**kwargs)
+
+        deactive_projects = Project.objects.filter(active=False,
+            owner=self.request.user)
+
+        context['deactive_projects'] = deactive_projects
+
+        return context
 
 class ProjectCreateView(CreateView):
     """
