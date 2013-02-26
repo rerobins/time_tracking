@@ -59,6 +59,7 @@ class ProjectListView(ListView):
 
         return context
 
+
 class ProjectCreateView(CreateView):
     """
         Specialized view that will create new project objects.
@@ -137,7 +138,7 @@ class ProjectEditView(UpdateView):
         self.initial['owner'] = request.user
         return super(ProjectEditView, self).post(request, *args, **kwargs)
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
@@ -168,7 +169,7 @@ class ProjectDeleteView(DeleteView):
         self.owner = request.user
         return super(ProjectDeleteView, self).get(request, *args, **kwargs)
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
@@ -189,7 +190,7 @@ class ProjectDetailView(DetailView):
     model = Project
     slug_url_kwarg = 'project_slug'
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
@@ -321,7 +322,7 @@ class RecordEditView(UpdateView):
 
         return form
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
@@ -364,7 +365,7 @@ class RecordDeleteView(DeleteView):
             owner=self.owner)
         return super(RecordDeleteView, self).get(request, *args, **kwargs)
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
@@ -383,7 +384,7 @@ class RecordCloseView(View, SingleObjectMixin):
     model = Record
     return_view = ProjectDetailView
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
             Return the query set that will only return the records owned by the
             current user and referenced by the project.
@@ -495,7 +496,7 @@ class CategoryEditView(UpdateView):
         self.initial['project'] = self.project
         return super(CategoryEditView, self).get(request, *args, **kwargs)
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
@@ -545,7 +546,7 @@ class CategoryDeleteView(DeleteView):
             owner=self.owner)
         return super(CategoryDeleteView, self).get(request, *args, **kwargs)
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
@@ -578,7 +579,7 @@ class CategoryDetailView(DetailView):
 
         return super(CategoryDetailView, self).get(request, *args, **kwargs)
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
