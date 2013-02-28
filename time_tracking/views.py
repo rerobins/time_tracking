@@ -174,10 +174,62 @@ class ProjectDeleteView(DeleteView):
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
         """
-        return Project.objects.filter(owner=self.user)
+        return Project.objects.filter(owner=self.owner)
 
     def get_success_url(self):
         return reverse('project_list_view')
+
+
+class ProjectCopyView(CreateView):
+    """
+        Specialized view that will create new project objects.
+    """
+    form_class = ProjectForm
+    model = Project
+
+    def form_valid(self, form):
+        """
+            Sets the slug to the correct value based on the name of the object
+            that was just created.
+        """
+        form.instance.owner = self.request.user
+
+        self.object = form.save(commit=False)
+        self.object.slug = slugify(self.object.name)
+
+        self.object.save()
+
+        for category in self.source_project.category_set.all():
+            new_category = Category()
+            new_category.name = category.name
+            new_category.slug = category.slug
+            new_category.project = self.object
+            new_category.save()
+
+        return super(ProjectCopyView, self).form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Override the get so that the initial object's owner can be set to
+            the request user.
+        """
+        self.initial['owner'] = request.user
+        self.source_project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+        return super(ProjectCopyView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+            Override the post so that the initial object's owner can be set to
+            the request user.
+        """
+        self.user = request.user
+        self.initial['owner'] = request.user
+        self.source_project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+        return super(ProjectCopyView, self).post(request, *args, **kwargs)
 
 
 class ProjectDetailView(DetailView):
@@ -594,7 +646,7 @@ class CategoryDetailView(DetailView):
         """
         context = super(CategoryDetailView, self).get_context_data(**kwargs)
 
-        ## Need to fetch the records that are associated with this project.
+        ## Need to fetch the records that are associated with this category.
         open_records = self.object.record_set.filter(end_time=None)
 
         closed_records = self.object.record_set.exclude(end_time=None)

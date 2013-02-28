@@ -23,7 +23,7 @@ from django.contrib.auth.decorators import login_required
 
 from time_tracking.views import ProjectCreateView, ProjectDetailView
 from time_tracking.views import ProjectEditView, ProjectDeleteView
-from time_tracking.views import ProjectListView
+from time_tracking.views import ProjectListView, ProjectCopyView
 from time_tracking.views import CategoryCreateView, CategoryDetailView
 from time_tracking.views import CategoryEditView, CategoryDeleteView
 from time_tracking.views import RecordCreateView, RecordDeleteView
@@ -50,6 +50,9 @@ urlpatterns = patterns('',
     url(r'^delete/project/(?P<project_slug>[^/]+)/$', login_required(
         ProjectDeleteView.as_view()),
         name='project_delete_view'),
+    url(r'^copy/project/(?P<project_slug>[^/]+)/$', login_required(
+        ProjectCopyView.as_view()),
+        name='project_copy_view'),
 
     ## Record manipulation
     url(r'^project/(?P<project_slug>[^/]+)/add/$',
