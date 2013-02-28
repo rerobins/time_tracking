@@ -82,7 +82,7 @@ class CategoryForm(ModelForm):
         ## owned by that user.
         try:
             Category.objects.get(name=cleaned_data['name'],
-                owner=self.initial['project'])
+                project=self.initial['project'])
         except:
             pass
         else:
