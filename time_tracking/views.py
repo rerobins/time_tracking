@@ -126,6 +126,7 @@ class ProjectEditView(UpdateView):
             Override the get so that the initial object's owner can be set to
             the request user.
         """
+        self.user = request.user
         self.initial['owner'] = request.user
         return super(ProjectEditView, self).get(request, *args, **kwargs)
 
