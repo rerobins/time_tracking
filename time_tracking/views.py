@@ -695,29 +695,12 @@ class LocationCreateView(CreateView):
 
         return super(LocationCreateView, self).form_valid(form)
 
-    def get(self, request, *args, **kwargs):
-        """
-            Override the get so that the initial object's owner can be set to
-            the request user.
-        """
-        self.initial['owner'] = request.user
-        return super(LocationCreateView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        """
-            Override the post so that the initial object's owner can be set to
-            the request user.
-        """
-        self.user = request.user
-        self.initial['owner'] = request.user
-        return super(LocationCreateView, self).post(request, *args, **kwargs)
-
 
 class LocationEditView(UpdateView):
     """
         Specialized view that will edit project objects.
     """
-    form_class = ProjectForm
+    form_class = LocationForm
     model = Location
     slug_url_kwarg = 'location_slug'
 
@@ -735,30 +718,12 @@ class LocationEditView(UpdateView):
 
         return super(LocationEditView, self).form_valid(form)
 
-    def get(self, request, *args, **kwargs):
-        """
-            Override the get so that the initial object's owner can be set to
-            the request user.
-        """
-        self.user = request.user
-        self.initial['owner'] = request.user
-        return super(LocationEditView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        """
-            Override the post so that the initial object's owner can be set to
-            the request user
-        """
-        self.user = request.user
-        self.initial['owner'] = request.user
-        return super(LocationEditView, self).post(request, *args, **kwargs)
-
     def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
         """
-        return self.model.objects.filter(owner=self.user)
+        return self.model.objects.filter(owner=self.request.user)
 
 
 class LocationDeleteView(DeleteView):
@@ -768,28 +733,12 @@ class LocationDeleteView(DeleteView):
     model = Location
     slug_url_kwarg = 'location_slug'
 
-    def post(self, request, *args, **kwargs):
-        """
-            Wants to fetch the project that the record is supposed to be
-            associated with.
-        """
-        self.owner = request.user
-        return super(LocationDeleteView, self).post(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        """
-            Wants to fetch the project that the record is supposed to be
-            associated with.
-        """
-        self.owner = request.user
-        return super(LocationDeleteView, self).get(request, *args, **kwargs)
-
     def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
         """
-        return self.model.objects.filter(owner=self.owner)
+        return self.model.objects.filter(owner=self.request.user)
 
     def get_success_url(self):
         return reverse('location_list_view')
@@ -811,4 +760,3 @@ class LocationDetailView(DetailView):
             user that is making the request.
         """
         return self.model.objects.filter(owner=self.request.user)
-

@@ -59,9 +59,6 @@ class RecordForm(ModelForm):
 
     class Meta:
         model = Record
-#        fields = ('start_time', 'end_time',
-#                    'brief_description', 'categories',
-#                    'location')
         fields = ('start_time', 'end_time', 'brief_description', 'category',
             'location')
 
@@ -74,8 +71,8 @@ class CategoryForm(ModelForm):
     def clean(self):
         """
             Overriden to validate the model before it is saved to the database,
-            want to make sure that there are not two projects owned by the same
-            user that have the same name.
+            want to make sure that there are not two categories owned by the
+            same user that have the same name.
         """
         cleaned_data = self.cleaned_data
 
@@ -105,12 +102,12 @@ class LocationForm(ModelForm):
     def clean(self):
         """
             Overriden to validate the model before it is saved to the database,
-            want to make sure that there are not two projects owned by the same
-            user that have the same name.
+            want to make sure that there are not two locations owned by the
+            same user that have the same name.
         """
         cleaned_data = self.cleaned_data
 
-        ## Make sure that there isn' already a project with the name requested
+        ## Make sure that there isn' already a location with the name requested
         ## owned by that user.
         try:
             Location.objects.get(name=cleaned_data['name'],
