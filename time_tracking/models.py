@@ -34,6 +34,7 @@ class Project(models.Model):
 
     class Meta:
         unique_together = (('slug', 'owner'),)
+        ordering = ['name']
 
     @models.permalink
     def get_absolute_url(self):
@@ -53,6 +54,7 @@ class Category(models.Model):
 
     class Meta:
         unique_together = (('slug', 'project'),)
+        ordering = ['name']
 
     @models.permalink
     def get_absolute_url(self):
@@ -73,6 +75,10 @@ class Location(models.Model):
     slug = models.SlugField(editable=False)
     location = models.CharField(max_length=255)
 
+    class Meta:
+        unique_together = (('owner', 'slug'),)
+        ordering = ['name']
+
 
 class Record(models.Model):
     """
@@ -86,6 +92,9 @@ class Record(models.Model):
     end_time = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, null=True, blank=True)
     location = models.ForeignKey(Location, blank=True, null=True)
+
+    class Meta:
+        ordering = ['start_time', 'end_time']
 
     def close(self):
         """
