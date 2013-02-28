@@ -79,6 +79,13 @@ class Location(models.Model):
         unique_together = (('owner', 'slug'),)
         ordering = ['name']
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('location_detail_view', (), {'location_slug': self.slug})
+
+    def __unicode__(self):
+        return self.name
+
 
 class Record(models.Model):
     """
@@ -90,8 +97,10 @@ class Record(models.Model):
     brief_description = models.CharField(max_length=255, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True, blank=True)
-    category = models.ForeignKey(Category, null=True, blank=True)
-    location = models.ForeignKey(Location, blank=True, null=True)
+    category = models.ForeignKey(Category, null=True, blank=True,
+                on_delete=models.SET_NULL)
+    location = models.ForeignKey(Location, blank=True, null=True,
+                on_delete=models.SET_NULL)
 
     class Meta:
         ordering = ['start_time', 'end_time']

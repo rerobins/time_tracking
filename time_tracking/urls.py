@@ -28,6 +28,9 @@ from time_tracking.views import CategoryCreateView, CategoryDetailView
 from time_tracking.views import CategoryEditView, CategoryDeleteView
 from time_tracking.views import RecordCreateView, RecordDeleteView
 from time_tracking.views import RecordCloseView, RecordEditView
+from time_tracking.views import LocationCreateView, LocationDetailView
+from time_tracking.views import LocationEditView, LocationDeleteView
+from time_tracking.views import LocationListView
 
 urlpatterns = patterns('',
 
@@ -86,6 +89,20 @@ urlpatterns = patterns('',
         name='category_delete_view'),
 
     ## Location manipulation
+    url(r'^locations/$', login_required(LocationListView.as_view()),
+        name='location_list_view'),
+    url(r'^add/location/$', login_required(
+        LocationCreateView.as_view()),
+            name='location_create_view'),
+    url(r'^location/(?P<location_slug>[^/]+)/$', login_required(
+        LocationDetailView.as_view()),
+        name='location_detail_view'),
+    url(r'^edit/location/(?P<location_slug>[^/]+)/$', login_required(
+        LocationEditView.as_view()),
+        name='location_edit_view'),
+    url(r'^delete/location/(?P<location_slug>[^/]+)/$', login_required(
+        LocationDeleteView.as_view()),
+        name='location_delete_view'),
 
     ## Reports per Project
 

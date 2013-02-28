@@ -1,0 +1,14 @@
+{% extends "time_tracking/base.html" %}
+
+{% block content %}
+
+<p><a href="{% url location_create_view %}">Create Location</a></p>
+
+<h1>Locations</h1>
+{% for o in locations %}
+
+    <p><a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}</p>
+
+{% endfor %}
+
+{% endblock %}
