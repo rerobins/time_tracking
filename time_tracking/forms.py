@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
-from time_tracking.models import Project, Record, Category
+from time_tracking.models import Project, Record, Category, Location
 
 
 class ProjectForm(ModelForm):
@@ -59,10 +59,8 @@ class RecordForm(ModelForm):
 
     class Meta:
         model = Record
-#        fields = ('start_time', 'end_time',
-#                    'brief_description', 'categories',
-#                    'location')
-        fields = ('start_time', 'end_time', 'brief_description', 'category')
+        fields = ('start_time', 'end_time', 'brief_description', 'category',
+            'location')
 
 
 class CategoryForm(ModelForm):
@@ -73,8 +71,8 @@ class CategoryForm(ModelForm):
     def clean(self):
         """
             Overriden to validate the model before it is saved to the database,
-            want to make sure that there are not two projects owned by the same
-            user that have the same name.
+            want to make sure that there are not two categories owned by the
+            same user that have the same name.
         """
         cleaned_data = self.cleaned_data
 
@@ -82,7 +80,7 @@ class CategoryForm(ModelForm):
         ## owned by that user.
         try:
             Category.objects.get(name=cleaned_data['name'],
-                owner=self.initial['project'])
+                project=self.initial['project'])
         except:
             pass
         else:
@@ -93,3 +91,34 @@ class CategoryForm(ModelForm):
     class Meta:
         model = Category
         fields = ('name',)
+
+
+class LocationForm(ModelForm):
+    """
+        Form that will allow for the location object to have its slug
+        overridden
+    """
+
+    def clean(self):
+        """
+            Overriden to validate the model before it is saved to the database,
+            want to make sure that there are not two locations owned by the
+            same user that have the same name.
+        """
+        cleaned_data = self.cleaned_data
+
+        ## Make sure that there isn' already a location with the name requested
+        ## owned by that user.
+        try:
+            Location.objects.get(name=cleaned_data['name'],
+                owner=self.initial['owner'])
+        except:
+            pass
+        else:
+            raise ValidationError("Location with this name already exists")
+
+        return cleaned_data
+
+    class Meta:
+        model = Location
+        fields = ('name', 'location',)

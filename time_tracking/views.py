@@ -26,7 +26,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
 from time_tracking.forms import ProjectForm, RecordForm, CategoryForm
-from time_tracking.models import Project, Record, Category
+from time_tracking.forms import LocationForm
+from time_tracking.models import Project, Record, Category, Location
 
 from django.utils import timezone
 
@@ -126,6 +127,7 @@ class ProjectEditView(UpdateView):
             Override the get so that the initial object's owner can be set to
             the request user.
         """
+        self.user = request.user
         self.initial['owner'] = request.user
         return super(ProjectEditView, self).get(request, *args, **kwargs)
 
@@ -174,10 +176,62 @@ class ProjectDeleteView(DeleteView):
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
         """
-        return Project.objects.filter(owner=self.user)
+        return Project.objects.filter(owner=self.owner)
 
     def get_success_url(self):
         return reverse('project_list_view')
+
+
+class ProjectCopyView(CreateView):
+    """
+        Specialized view that will create new project objects.
+    """
+    form_class = ProjectForm
+    model = Project
+
+    def form_valid(self, form):
+        """
+            Sets the slug to the correct value based on the name of the object
+            that was just created.
+        """
+        form.instance.owner = self.request.user
+
+        self.object = form.save(commit=False)
+        self.object.slug = slugify(self.object.name)
+
+        self.object.save()
+
+        for category in self.source_project.category_set.all():
+            new_category = Category()
+            new_category.name = category.name
+            new_category.slug = category.slug
+            new_category.project = self.object
+            new_category.save()
+
+        return super(ProjectCopyView, self).form_valid(form)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Override the get so that the initial object's owner can be set to
+            the request user.
+        """
+        self.initial['owner'] = request.user
+        self.source_project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+        return super(ProjectCopyView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+            Override the post so that the initial object's owner can be set to
+            the request user.
+        """
+        self.user = request.user
+        self.initial['owner'] = request.user
+        self.source_project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+        return super(ProjectCopyView, self).post(request, *args, **kwargs)
 
 
 class ProjectDetailView(DetailView):
@@ -594,7 +648,7 @@ class CategoryDetailView(DetailView):
         """
         context = super(CategoryDetailView, self).get_context_data(**kwargs)
 
-        ## Need to fetch the records that are associated with this project.
+        ## Need to fetch the records that are associated with this category.
         open_records = self.object.record_set.filter(end_time=None)
 
         closed_records = self.object.record_set.exclude(end_time=None)
@@ -603,3 +657,106 @@ class CategoryDetailView(DetailView):
         context['open_records'] = open_records
 
         return context
+
+
+class LocationListView(ListView):
+    """
+        List view that will display a list of all of the projects.
+    """
+
+    model = Location
+    context_object_name = 'locations'
+
+    def get_queryset(self):
+        """
+            Return the list of active projects to display.
+        """
+        return self.model.objects.filter(owner=self.request.user)
+
+
+class LocationCreateView(CreateView):
+    """
+        Specialized view that will create new project objects.
+    """
+    form_class = LocationForm
+    model = Location
+
+    def form_valid(self, form):
+        """
+            Sets the slug to the correct value based on the name of the object
+            that was just created.
+        """
+        form.instance.owner = self.request.user
+
+        self.object = form.save(commit=False)
+        self.object.slug = slugify(self.object.name)
+
+        self.object.save()
+
+        return super(LocationCreateView, self).form_valid(form)
+
+
+class LocationEditView(UpdateView):
+    """
+        Specialized view that will edit project objects.
+    """
+    form_class = LocationForm
+    model = Location
+    slug_url_kwarg = 'location_slug'
+
+    def form_valid(self, form):
+        """
+            Sets the slug to the correct value based on the name of the object
+            that was just created.
+        """
+        form.instance.owner = self.request.user
+
+        self.object = form.save(commit=False)
+        self.object.slug = slugify(self.object.name)
+
+        self.object.save()
+
+        return super(LocationEditView, self).form_valid(form)
+
+    def get_queryset(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return self.model.objects.filter(owner=self.request.user)
+
+
+class LocationDeleteView(DeleteView):
+    """
+        Deletes a project.
+    """
+    model = Location
+    slug_url_kwarg = 'location_slug'
+
+    def get_queryset(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return self.model.objects.filter(owner=self.request.user)
+
+    def get_success_url(self):
+        return reverse('location_list_view')
+
+
+class LocationDetailView(DetailView):
+    """
+        Overriding the Detail View generic class to provide the record
+        information that is to be displayed along with the rest of the
+        project details.
+    """
+
+    model = Location
+    slug_url_kwarg = 'location_slug'
+
+    def get_queryset(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return self.model.objects.filter(owner=self.request.user)
