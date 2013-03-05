@@ -7,7 +7,9 @@
 <h1>Locations</h1>
 {% for o in locations %}
 
-    <p><a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}</p>
+    <p><a href="{{ o.get_absolute_url }}">{{o.name}}</a>
+        <a href="{% url location_edit_view o.slug %}">Edit</a>
+        <a href="{% url location_delete_view o.slug %}">Delete</a></p>
 
 {% endfor %}
 

@@ -39,7 +39,7 @@ urlpatterns = patterns('',
         TemplateView.as_view(template_name="time_tracking/license.html")),
 
     ## Project manipulation
-    url(r'^projects/$', login_required(ProjectListView.as_view()),
+    url(r'^$', login_required(ProjectListView.as_view()),
         name='project_list_view'),
     url(r'^add/project/$', login_required(
         ProjectCreateView.as_view()),
