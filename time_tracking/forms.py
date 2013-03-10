@@ -60,7 +60,7 @@ class RecordForm(ModelForm):
     class Meta:
         model = Record
         fields = ('start_time', 'end_time', 'brief_description', 'category',
-            'location')
+            'location', 'description')
 
 
 class CategoryForm(ModelForm):
