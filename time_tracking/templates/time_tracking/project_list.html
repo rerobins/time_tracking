@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<p><a href="{% url project_create_view %}">Create Project</a></p>
+<p><a href="{% url 'project_create_view' %}">Create Project</a></p>
 
 <h1>Active Projects</h1>
 {% for o in active_projects %}
