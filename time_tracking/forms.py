@@ -17,6 +17,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from django.template.defaultfilters import slugify
+
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
 from time_tracking.models import Project, Record, Category, Location
@@ -37,8 +39,11 @@ class ProjectForm(ModelForm):
 
         ## Make sure that there isn' already a project with the name requested
         ## owned by that user.
+
+        test_slug = slugify(cleaned_data['name'])
+
         try:
-            Project.objects.get(name=cleaned_data['name'],
+            Project.objects.get(slug=test_slug,
                 owner=self.initial['owner'])
         except:
             pass
@@ -60,7 +65,7 @@ class RecordForm(ModelForm):
     class Meta:
         model = Record
         fields = ('start_time', 'end_time', 'brief_description', 'category',
-            'location')
+            'location', 'description')
 
 
 class CategoryForm(ModelForm):
@@ -76,10 +81,12 @@ class CategoryForm(ModelForm):
         """
         cleaned_data = self.cleaned_data
 
+        test_slug = slugify(cleaned_data['name'])
+
         ## Make sure that there isn' already a project with the name requested
         ## owned by that user.
         try:
-            Category.objects.get(name=cleaned_data['name'],
+            Category.objects.get(slug=test_slug,
                 project=self.initial['project'])
         except:
             pass
@@ -107,10 +114,12 @@ class LocationForm(ModelForm):
         """
         cleaned_data = self.cleaned_data
 
+        test_slug = slugify(cleaned_data['name'])
+
         ## Make sure that there isn' already a location with the name requested
         ## owned by that user.
         try:
-            Location.objects.get(name=cleaned_data['name'],
+            Location.objects.get(slug=test_slug,
                 owner=self.initial['owner'])
         except:
             pass

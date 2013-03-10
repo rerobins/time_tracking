@@ -22,6 +22,8 @@ from django.views.generic import View, ListView
 from django.views.generic.detail import SingleObjectMixin
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+
 
 from django.shortcuts import get_object_or_404
 
@@ -452,6 +454,15 @@ class RecordCloseView(View, SingleObjectMixin):
         """
         return self.project.get_absolute_url()
 
+    def close(self, request, *args, **kwargs):
+        """
+            Close the record and return the redirect back to the project that
+            fired off the event.
+        """
+        self.object = self.get_object()
+        self.object.close()
+        return HttpResponseRedirect(self.project.get_absolute_url())
+
     def get(self, request, *args, **kwargs):
         """
             Set up some additional class values, and then close the record
@@ -462,13 +473,7 @@ class RecordCloseView(View, SingleObjectMixin):
             slug=self.kwargs.get('project_slug', None),
             owner=self.owner)
 
-        self.object = self.get_object()
-
-        self.object.close()
-
-        return_view = self.return_view()
-
-        return return_view.dispatch(request, *args, **kwargs)
+        return self.close(request, *args, **kwargs)
 
 
 class CategoryCreateView(CreateView):

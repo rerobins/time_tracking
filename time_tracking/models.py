@@ -101,6 +101,7 @@ class Record(models.Model):
                 on_delete=models.SET_NULL)
     location = models.ForeignKey(Location, blank=True, null=True,
                 on_delete=models.SET_NULL)
+    description = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ['start_time', 'end_time']
