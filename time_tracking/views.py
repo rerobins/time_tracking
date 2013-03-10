@@ -469,14 +469,9 @@ class RecordCloseView(View, SingleObjectMixin):
             object before redirecting back to the service.
         """
         self.owner = request.user
-
-        print "%s" % self.owner
-
         self.project = get_object_or_404(Project,
             slug=self.kwargs.get('project_slug', None),
             owner=self.owner)
-
-        print "Found Project."
 
         return self.close(request, *args, **kwargs)
 
