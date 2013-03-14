@@ -305,6 +305,9 @@ class RecordCreateView(CreateView):
             slug=self.kwargs.get('project_slug', None),
             owner=self.owner)
         self.initial['start_time'] = timezone.now()
+
+        print timezone.is_aware(self.initial['start_time'])
+
         return super(RecordCreateView, self).get(request, *args, **kwargs)
 
     def get_form(self, form_class):
@@ -333,6 +336,12 @@ class RecordCreateView(CreateView):
             that was just created.
         """
         form.instance.project = self.project
+
+        form.instance.start_time_tz = form.instance.start_time.tzinfo
+
+        if form.instance.end_time is not None:
+            form.instance.end_time_tz = form.instance.end_time.tzinfo
+
         return super(RecordCreateView, self).form_valid(form)
 
 

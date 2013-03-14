@@ -96,7 +96,9 @@ class Record(models.Model):
     project = models.ForeignKey(Project)
     brief_description = models.CharField(max_length=255, blank=True)
     start_time = models.DateTimeField()
+    start_time_tz = models.CharField(max_length=50)
     end_time = models.DateTimeField(null=True, blank=True)
+    end_time_tz = models.CharField(max_length=50)
     category = models.ForeignKey(Category, null=True, blank=True,
                 on_delete=models.SET_NULL)
     location = models.ForeignKey(Location, blank=True, null=True,
