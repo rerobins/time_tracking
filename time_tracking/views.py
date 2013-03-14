@@ -275,6 +275,7 @@ class ProjectDetailView(DetailView):
 
         return context
 
+import pytz
 
 class RecordCreateView(CreateView):
     """
@@ -340,7 +341,18 @@ class RecordCreateView(CreateView):
         form.instance.start_time_tz = form.instance.start_time.tzinfo
 
         if form.instance.end_time is not None:
+            print form.instance.end_time
+            print form.instance.end_time.tzinfo
+
+            print timezone.localtime(form.instance.end_time, pytz.timezone("US/Eastern"))
+            time = timezone.make_naive(form.instance.end_time, form.instance.end_time.tzinfo)
+            print time
+            time = timezone.make_aware(time, pytz.timezone("US/Eastern"))
+            print time
+
+
             form.instance.end_time_tz = form.instance.end_time.tzinfo
+
 
         return super(RecordCreateView, self).form_valid(form)
 
