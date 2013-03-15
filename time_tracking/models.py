@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+import pytz
 
 
 class Project(models.Model):
@@ -86,6 +87,10 @@ class Location(models.Model):
     def __unicode__(self):
         return self.name
 
+# Time zone choices for all of the record date time values.
+timezone_choices = [(time_zone, time_zone)
+    for time_zone in pytz.common_timezones]
+
 
 class Record(models.Model):
     """
@@ -96,9 +101,10 @@ class Record(models.Model):
     project = models.ForeignKey(Project)
     brief_description = models.CharField(max_length=255, blank=True)
     start_time = models.DateTimeField()
-    start_time_tz = models.CharField(max_length=50)
+    start_time_tz = models.CharField(max_length=50, choices=timezone_choices)
     end_time = models.DateTimeField(null=True, blank=True)
-    end_time_tz = models.CharField(max_length=50)
+    end_time_tz = models.CharField(max_length=50, choices=timezone_choices,
+        blank=True)
     category = models.ForeignKey(Category, null=True, blank=True,
                 on_delete=models.SET_NULL)
     location = models.ForeignKey(Location, blank=True, null=True,
@@ -115,7 +121,10 @@ class Record(models.Model):
         """
         if self.end_time is None:
             self.end_time = timezone.now()
-            self.save()
+            self.end_time_tz = timezone.get_current_timezone()
+
+            if self.end_time >= self.start_time:
+                self.save()
 
     def duration(self):
         """
@@ -127,3 +136,12 @@ class Record(models.Model):
         else:
             duration = self.end_time - self.start_time
             return duration.seconds + duration.microseconds / 1E6
+
+
+def convert_time(time_value, timezone_value):
+    """
+        Converts the time value into the time zone value provided.
+    """
+    time = timezone.make_naive(time_value, timezone.get_current_timezone())
+    time = timezone.make_aware(time, timezone_value)
+    return time

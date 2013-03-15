@@ -21,46 +21,10 @@ from django.template.defaultfilters import slugify
 
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from time_tracking.models import Project, Record, Category, Location
-
-from django.forms import widgets
-from django.utils.timezone import make_aware
-from django.utils.dateparse import parse_datetime
+from time_tracking.models import convert_time
 import pytz
-
-
-class DateSelectorWidget(widgets.MultiWidget):
-    def __init__(self, attrs=None):
-        # create choices for days, months, years
-        # example below, the rest snipped for brevity.
-        timezones = [(tz, tz) for tz in pytz.common_timezones]
-        _widgets = (
-            widgets.TextInput(attrs=attrs),
-            widgets.Select(attrs=attrs, choices=timezones),
-        )
-        super(DateSelectorWidget, self).__init__(_widgets, attrs)
-
-    def decompress(self, value):
-        if value:
-            print "%s %s" % (value, value.tzinfo)
-            print "%s" % type(value)
-            return [value, value.tzinfo]
-        return [None, None]
-
-    def format_output(self, rendered_widgets):
-        return u''.join(rendered_widgets)
-
-    def value_from_datadict(self, data, files, name):
-        datelist = [
-            widget.value_from_datadict(data, files, name + '_%s' % i)
-            for i, widget in enumerate(self.widgets)]
-        try:
-            D = make_aware(parse_datetime(datelist[0]),
-                pytz.timezone(datelist[1]))
-        except ValueError:
-            return ''
-        else:
-            return D
 
 
 class ProjectForm(ModelForm):
@@ -101,11 +65,30 @@ class RecordForm(ModelForm):
         Form that will allow for the manipulation of the record objects.
     """
 
+    def clean(self):
+        cleaned_data = self.cleaned_data
+
+        end_time_tz = timezone.get_current_timezone()
+
+        if cleaned_data['end_time']:
+            start_time = convert_time(cleaned_data['start_time'],
+                pytz.timezone(cleaned_data['start_time_tz']))
+
+            if cleaned_data['end_time_tz']:
+                end_time_tz = pytz.timezone(cleaned_data['end_time_tz'])
+
+            end_time = convert_time(cleaned_data['end_time'],
+                end_time_tz)
+
+            if end_time < start_time:
+                raise ValidationError("End time cannot be before start time")
+
+        return cleaned_data
+
     class Meta:
         model = Record
-        fields = ('start_time', 'end_time', 'brief_description', 'category',
-            'location', 'description')
-        widgets = {'start_time': DateSelectorWidget(), }
+        fields = ('start_time', 'start_time_tz', 'end_time', 'end_time_tz',
+            'brief_description', 'category', 'location', 'description')
 
 
 class CategoryForm(ModelForm):

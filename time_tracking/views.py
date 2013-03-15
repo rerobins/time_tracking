@@ -23,12 +23,13 @@ from django.views.generic.detail import SingleObjectMixin
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+import pytz
 
 
 from django.shortcuts import get_object_or_404
 
 from time_tracking.forms import ProjectForm, RecordForm, CategoryForm
-from time_tracking.forms import LocationForm
+from time_tracking.forms import LocationForm, convert_time
 from time_tracking.models import Project, Record, Category, Location
 
 from django.utils import timezone
@@ -275,7 +276,6 @@ class ProjectDetailView(DetailView):
 
         return context
 
-import pytz
 
 class RecordCreateView(CreateView):
     """
@@ -306,8 +306,8 @@ class RecordCreateView(CreateView):
             slug=self.kwargs.get('project_slug', None),
             owner=self.owner)
         self.initial['start_time'] = timezone.now()
-
-        print timezone.is_aware(self.initial['start_time'])
+        self.initial['start_time_tz'] = timezone.get_current_timezone()
+        self.initial['end_time_tz'] = timezone.get_current_timezone()
 
         return super(RecordCreateView, self).get(request, *args, **kwargs)
 
@@ -338,21 +338,17 @@ class RecordCreateView(CreateView):
         """
         form.instance.project = self.project
 
-        form.instance.start_time_tz = form.instance.start_time.tzinfo
+        time = form.instance.start_time
+        form.instance.start_time = convert_time(time,
+            pytz.timezone(form.instance.start_time_tz))
 
-        if form.instance.end_time is not None:
-            print form.instance.end_time
-            print form.instance.end_time.tzinfo
+        if not form.instance.end_time_tz:
+            form.instance.end_time_tz = str(timezone.get_current_timezone())
 
-            print timezone.localtime(form.instance.end_time, pytz.timezone("US/Eastern"))
-            time = timezone.make_naive(form.instance.end_time, form.instance.end_time.tzinfo)
-            print time
-            time = timezone.make_aware(time, pytz.timezone("US/Eastern"))
-            print time
-
-
-            form.instance.end_time_tz = form.instance.end_time.tzinfo
-
+        if form.instance.end_time:
+            time = form.instance.end_time
+            form.instance.end_time = convert_time(time,
+                pytz.timezone(form.instance.end_time_tz))
 
         return super(RecordCreateView, self).form_valid(form)
 
@@ -385,7 +381,6 @@ class RecordEditView(UpdateView):
         self.project = get_object_or_404(Project,
             slug=self.kwargs.get('project_slug', None),
             owner=self.owner)
-        self.initial['start_time'] = timezone.now()
         return super(RecordEditView, self).get(request, *args, **kwargs)
 
     def get_form(self, form_class):
@@ -412,6 +407,21 @@ class RecordEditView(UpdateView):
             success.
         """
         return self.project.get_absolute_url()
+
+    def form_valid(self, form):
+        time = form.instance.start_time
+        form.instance.start_time = convert_time(time,
+            pytz.timezone(form.instance.start_time_tz))
+
+        if not form.instance.end_time_tz:
+            form.instance.end_time_tz = str(timezone.get_current_timezone())
+
+        if form.instance.end_time:
+            time = form.instance.end_time
+            form.instance.end_time = convert_time(time,
+                pytz.timezone(form.instance.end_time_tz))
+
+        return super(RecordEditView, self).form_valid(form)
 
 
 class RecordDeleteView(DeleteView):
