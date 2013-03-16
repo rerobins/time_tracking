@@ -173,16 +173,25 @@ class Record(models.Model):
             return duration.seconds + duration.microseconds / 1E6
 
     def get_edit_url(self):
+        """
+            Return URL for editing a record.
+        """
         return reverse('record_edit_view',
             kwargs={'project_slug': self.project.slug,
                     'pk': self.pk})
 
     def get_delete_url(self):
+        """
+            Return URL for deleting a record.
+        """
         return reverse('record_delete_view',
             kwargs={'project_slug': self.project.slug,
                     'pk': self.pk})
 
     def get_close_url(self):
+        """
+            Return URL for closing a record.
+        """
         return reverse('record_close_view',
             kwargs={'project_slug': self.project.slug,
                     'pk': self.pk})
