@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.utils import timezone
 import pytz
 
@@ -37,11 +38,45 @@ class Project(models.Model):
         unique_together = (('slug', 'owner'),)
         ordering = ['name']
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('project_detail_view', (), {'project_slug': self.slug})
+        """
+            Return the URL for the project.
+        """
+        return reverse('project_detail_view',
+            kwargs={'project_slug': self.slug})
+
+    def get_edit_url(self):
+        """
+            Return URL for editing a project.
+        """
+        return reverse('project_edit_view',
+            kwargs={'project_slug': self.slug})
+
+    def get_delete_url(self):
+        """
+            Return URL for deleting a project.
+        """
+        return reverse('project_delete_view',
+            kwargs={'project_slug': self.slug})
+
+    def get_add_category_url(self):
+        """
+            Return URL for adding a category to this project.
+        """
+        return reverse('category_create_view',
+            kwargs={'project_slug': self.slug})
+
+    def get_copy_project_url(self):
+        """
+            Return URL for copying the project to a new value.
+        """
+        return reverse('project_copy_view',
+            kwargs={'project_slug': self.slug})
 
     def __unicode__(self):
+        """
+            Human readable strin representing the project.
+        """
         return self.name
 
 
@@ -57,10 +92,10 @@ class Category(models.Model):
         unique_together = (('slug', 'project'),)
         ordering = ['name']
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('category_detail_view', (), {'project_slug': self.project.slug,
-            'category_slug': self.slug})
+        return reverse('category_detail_view',
+            kwargs={'project_slug': self.project.slug,
+                    'category_slug': self.slug})
 
     def __unicode__(self):
         return self.name
@@ -80,9 +115,9 @@ class Location(models.Model):
         unique_together = (('owner', 'slug'),)
         ordering = ['name']
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('location_detail_view', (), {'location_slug': self.slug})
+        return reverse('location_detail_view',
+            kwargs={'location_slug': self.slug})
 
     def __unicode__(self):
         return self.name
@@ -136,6 +171,21 @@ class Record(models.Model):
         else:
             duration = self.end_time - self.start_time
             return duration.seconds + duration.microseconds / 1E6
+
+    def get_edit_url(self):
+        return reverse('record_edit_view',
+            kwargs={'project_slug': self.project.slug,
+                    'pk': self.pk})
+
+    def get_delete_url(self):
+        return reverse('record_delete_view',
+            kwargs={'project_slug': self.project.slug,
+                    'pk': self.pk})
+
+    def get_close_url(self):
+        return reverse('record_close_view',
+            kwargs={'project_slug': self.project.slug,
+                    'pk': self.pk})
 
 
 def convert_time(time_value, timezone_value):

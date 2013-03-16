@@ -7,19 +7,19 @@
 <p>Name: {{object.name}}</p>
 <p>Slug: {{object.slug}}</p>
 <p>
-    <a href="{% url 'project_edit_view' object.slug %}">Edit</a>
-    <a href="{% url 'project_delete_view' object.slug %}">Delete</a>
-    <a href="{% url 'category_create_view' object.slug %}">Add Category</a>
-    <a href="{% url 'project_copy_view' object.slug %}">Copy Project</a>
+    <a href="{{ object.get_edit_url }}">Edit</a>
+    <a href="{{ object.get_delete_url }}">Delete</a>
+    <a href="{{ object.get_add_category_url }}">Add Category</a>
+    <a href="{{ object.get_copy_project_url }}">Copy Project</a>
 </p>
 
 <h1>Open Records</h1>
 
 {% for record in open_records %}
     <p>Record: {{ record.start_time }}
-        <a href="{% url 'record_delete_view' object.slug record.pk %}">Delete</a>
-        <a href="{% url 'record_close_view' object.slug record.pk %}">Close</a>
-        <a href="{% url 'record_edit_view' object.slug record.pk %}">Edit</a>
+        <a href="{{ record.get_delete_url }}">Delete</a>
+        <a href="{{ record.get_close_url }}">Close</a>
+        <a href="{{ record.get_edit_url }}">Edit</a>
     </p>
 {% empty %}
     <p>Empty</p>
@@ -31,8 +31,8 @@
 {% for record in closed_records %}
     <p>Record: {{ record.start_time }} -> {{ record.end_time }} {{ record.start_time|timesince:record.end_time}}
         {{ record.duration }}
-        <a href="{% url 'record_delete_view' object.slug record.pk %}">Delete</a>
-        <a href="{% url 'record_edit_view' object.slug record.pk %}">Edit</a>
+        <a href="{{ record.get_delete_url }}">Delete</a>
+        <a href="{{ record.get_edit_url }}">Edit</a>
     </p>
 {% empty %}
     <p>Empty</p>
@@ -41,7 +41,7 @@
 
 <h1>Categories</h1>
 {% for category in object.category_set.all %}
-    <p>Category: <a href="{% url 'category_detail_view' object.slug category.slug %}">{{ category }}</a></p>
+    <p>Category: <a href="{{ category.get_absolute_url }}">{{ category }}</a></p>
 {% empty %}
     <p>Empty</p>
 {% endfor %}
