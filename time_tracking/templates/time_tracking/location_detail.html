@@ -7,8 +7,8 @@
 <p>Name: {{object.name}}</p>
 <p>Slug: {{object.slug}}</p>
 <p>
-    <a href="{% url 'location_edit_view' object.slug %}">Edit</a>
-    <a href="{% url 'location_delete_view' object.slug %}">Delete</a>
+    <a href="{{ object.get_edit_url }}">Edit</a>
+    <a href="{{ object.get_delete_url }}">Delete</a>
 </p>
 
 <p>Location: {{ object.location }}</p>

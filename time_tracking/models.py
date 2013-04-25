@@ -73,6 +73,13 @@ class Project(models.Model):
         return reverse('project_copy_view',
             kwargs={'project_slug': self.slug})
 
+    def get_add_record_url(self):
+        """
+            Return the URL for creating a new record object.
+        """
+        return reverse('record_create_view',
+            kwargs={'project_slug': self.slug})
+
     def __unicode__(self):
         """
             Human readable strin representing the project.
@@ -93,11 +100,34 @@ class Category(models.Model):
         ordering = ['name']
 
     def get_absolute_url(self):
+        """
+            Return the aboslute url that is used to view the details of this
+            object.
+        """
         return reverse('category_detail_view',
             kwargs={'project_slug': self.project.slug,
                     'category_slug': self.slug})
 
+    def get_edit_url(self):
+        """
+            Return the url that will be used to edit this object.
+        """
+        return reverse('category_edit_view',
+            kwargs={'project_slug': self.project.slug,
+                    'category_slug': self.slug})
+
+    def get_delete_url(self):
+        """
+            Return the url that will be used to delete this object.
+        """
+        return reverse('category_delete_view',
+            kwargs={'project_slug': self.project.slug,
+                    'category_slug': self.slug})
+
     def __unicode__(self):
+        """
+            Human readable version of this object.
+        """
         return self.name
 
 
@@ -116,7 +146,24 @@ class Location(models.Model):
         ordering = ['name']
 
     def get_absolute_url(self):
+        """
+            Return the absolute url for the detail view of this object.
+        """
         return reverse('location_detail_view',
+            kwargs={'location_slug': self.slug})
+
+    def get_edit_url(self):
+        """
+            Return the absolute url for the editing of this object.
+        """
+        return reverse('location_edit_view',
+            kwargs={'location_slug': self.slug})
+
+    def get_delete_url(self):
+        """
+            Return the absolute url for the deleting of this object.
+        """
+        return reverse('location_delete_view',
             kwargs={'location_slug': self.slug})
 
     def __unicode__(self):

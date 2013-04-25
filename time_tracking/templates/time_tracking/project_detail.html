@@ -47,7 +47,7 @@
 {% endfor %}
 
 {% if object.active %}
-    <p><a href="{% url 'record_create_view' object.slug %}">Add New Records</a></p>
+    <p><a href="{{ object.get_add_record_url }}">Add New Records</a></p>
 {% endif %}
 <p><a href="{% url 'project_list_view' %}">Back to Project List</a></p>
 
