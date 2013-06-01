@@ -17,7 +17,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from time_tracking.models import Project
+from time_tracking.models import Project, Location
 
 
 def time_tracker(request):
@@ -31,6 +31,11 @@ def time_tracker(request):
     if request.user.is_authenticated():
         projects = Project.objects.filter(owner=request.user, active=True)
         return_value['active_projects'] = projects
+        
+        locations = Location.objects.filter(owner=request.user)
+        return_value['locations'] = locations
+        
+        
 
     return return_value
 

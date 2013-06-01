@@ -6,20 +6,60 @@ Time Tracker - Main
 
 {% block menu %}
 
-<p><b>Projects</b></p>
-{% if active_projects %}
-    <ul>
-        {% for o in active_projects %}
+{% if project %}
+<div class="well" style="padding: 8px 0;">
+	<ul class="nav nav-list">
+		<li class="nav-header">
+			Commands
+		</li>
+		{% if project.active %}
+		<li>
+			<a href="{{ project.get_add_record_url }}">Add New Records</a>
+		</li>
+		<li class="divider"></li>
+		{% endif %}
+		<li>
+			<a href="{{ project.get_edit_url }}">Edit</a>
+		</li>
+		<li>
+			<a href="{{ project.get_delete_url }}">Delete</a>
+		</li>
+		<li>
+			<a href="{{ project.get_copy_project_url }}">Copy Project</a>
+		</li>
+		<li class="divider"></li>
+		<li>
+			<a href="{{ project.get_add_category_url }}">Add Category</a>
+		</li>
+		<li>
+			Add Location
+		</li>
+	</ul>
+</div>
 
-            <li><a href="{{ o.get_absolute_url }}">{{o.name}}</a></li>
+<div class="well" style="padding: 8px 0;">
+	<ul class="nav nav-list">
+		<li class="nav-header">
+			Categories
+		</li>
+		{% for category in object.category_set.all %}
+		<li>{{category}}</li>
+		{% endfor %}
+	</ul>
+</div>
 
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>None</p>
+<div class="well" style="padding: 8px 0;">
+	<ul class="nav nav-list">
+		<li class="nav-header">
+			Locations
+		</li>
+		{% for location in locations %}
+		<li>{{location}}</li>
+		{% endfor %}
+	</ul>
+</div>
+
 {% endif %}
-
-<p><a href="{% url 'location_list_view' %}">Locations</a></p>
 
 
 {% endblock %}

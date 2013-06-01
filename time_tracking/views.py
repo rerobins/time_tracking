@@ -235,6 +235,18 @@ class ProjectCopyView(CreateView):
             slug=self.kwargs.get('project_slug', None),
             owner=request.user)
         return super(ProjectCopyView, self).post(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(ProjectCopyView, self).get_context_data(**kwargs)
+
+        context['project'] = self.source_project
+
+        return context
+    
 
 
 class ProjectDetailView(DetailView):

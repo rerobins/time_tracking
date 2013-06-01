@@ -2,53 +2,73 @@
 
 {% block content %}
 
-<h1>Project Detail</h1>
+<div class="row-fluid">
 
-<p>Name: {{object.name}}</p>
-<p>Slug: {{object.slug}}</p>
-<p>
-    <a href="{{ object.get_edit_url }}">Edit</a>
-    <a href="{{ object.get_delete_url }}">Delete</a>
-    <a href="{{ object.get_add_category_url }}">Add Category</a>
-    <a href="{{ object.get_copy_project_url }}">Copy Project</a>
-</p>
+	<div class="span12">
 
-<h1>Open Records</h1>
+		<div class="well well-small">
 
-{% for record in open_records %}
-    <p>Record: {{ record.start_time }}
-        <a href="{{ record.get_delete_url }}">Delete</a>
-        <a href="{{ record.get_close_url }}">Close</a>
-        <a href="{{ record.get_edit_url }}">Edit</a>
-    </p>
-{% empty %}
-    <p>Empty</p>
+			<h3>Metrics</h3>
 
-{% endfor %}
+		</div>
 
-<h1>Closed Records</h1>
+	</div>
 
-{% for record in closed_records %}
-    <p>Record: {{ record.start_time }} -> {{ record.end_time }} {{ record.start_time|timesince:record.end_time}}
-        {{ record.duration }}
-        <a href="{{ record.get_delete_url }}">Delete</a>
-        <a href="{{ record.get_edit_url }}">Edit</a>
-    </p>
-{% empty %}
-    <p>Empty</p>
+</div>
 
-{% endfor %}
+<div class="row-fluid">
 
-<h1>Categories</h1>
-{% for category in object.category_set.all %}
-    <p>Category: <a href="{{ category.get_absolute_url }}">{{ category }}</a></p>
-{% empty %}
-    <p>Empty</p>
-{% endfor %}
+	<div class="span6">
+		<div class="well well-small">
+			<h3>Open Records</h3>
+			{% for record in open_records %}
+			<p>
+				Record: {{ record.start_time }} <a href="{{ record.get_delete_url }}">Delete</a>
+				<a href="{{ record.get_close_url }}">Close</a>
+				<a href="{{ record.get_edit_url }}">Edit</a>
+			</p>
+			{% empty %}
+			<p>
+				Empty
+			</p>
+			{% endfor %}
+		</div>
+	</div>
 
-{% if object.active %}
-    <p><a href="{{ object.get_add_record_url }}">Add New Records</a></p>
-{% endif %}
-<p><a href="{% url 'project_list_view' %}">Back to Project List</a></p>
+	<div class="span6">
+		<div class="well well-small">
+			<h3>Description</h3>
+		</div>
+	</div>
+
+</div>
+
+<div class="row-fluid">
+
+	<div class="span6">
+		<div class="well well-small">
+			<h3>Closed Records</h3>
+			{% for record in closed_records %}
+			<p>
+				Record: {{ record.start_time }} -> {{ record.end_time }} {{ record.start_time|timesince:record.end_time}}
+				{{ record.duration }}
+				<a href="{{ record.get_delete_url }}">Delete</a>
+				<a href="{{ record.get_edit_url }}">Edit</a>
+			</p>
+			{% empty %}
+			<p>
+				Empty
+			</p>
+			{% endfor %}
+		</div>
+	</div>
+
+	<div class="span6">
+		<div class="well well-small">
+			<h3>Task Breakdown</h3>
+		</div>
+	</div>
+
+</div>
 
 {% endblock %}
