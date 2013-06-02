@@ -2,11 +2,12 @@
 
 {% block content %}
 
-<h1>Edit Category Form</h1>
+<h1>{{command}} Category Form</h1>
 
-<form action=". " method="post">{% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="Submit" />
+<form action="." method="post" class="form-horizontal">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 {% endblock %}

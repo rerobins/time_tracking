@@ -45,13 +45,16 @@ class ProjectForm(ModelForm):
 
         test_slug = slugify(cleaned_data['name'])
 
+        ## Make sure that there isn't already a project with the name requested
+        ## owned by that user.
         try:
-            Project.objects.get(slug=test_slug,
+            project = Project.objects.get(slug=test_slug,
                 owner=self.initial['owner'])
         except:
             pass
         else:
-            raise ValidationError("Project with this name already exists")
+            if self.instance.pk and not project.pk == self.instance.pk:
+                raise ValidationError("Project with this name already exists")
 
         return cleaned_data
 

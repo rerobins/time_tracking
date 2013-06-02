@@ -149,6 +149,17 @@ class ProjectEditView(UpdateView):
             user that is making the request.
         """
         return Project.objects.filter(owner=self.user)
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(ProjectEditView, self).get_context_data(**kwargs)
+        
+        context['edit_project'] = True
+
+        return context    
 
 
 class ProjectDeleteView(DeleteView):
@@ -183,6 +194,17 @@ class ProjectDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse('project_list_view')
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(ProjectDeleteView, self).get_context_data(**kwargs)
+        
+        context['delete_project'] = True
+
+        return context      
 
 
 class ProjectCopyView(CreateView):
@@ -244,6 +266,7 @@ class ProjectCopyView(CreateView):
         context = super(ProjectCopyView, self).get_context_data(**kwargs)
 
         context['project'] = self.source_project
+        context['copy_project'] = True
 
         return context
     
@@ -285,6 +308,7 @@ class ProjectDetailView(DetailView):
 
         context['closed_records'] = closed_records
         context['open_records'] = open_records
+        context['project_overview'] = True
 
         return context
 
@@ -363,6 +387,18 @@ class RecordCreateView(CreateView):
                 pytz.timezone(form.instance.end_time_tz))
 
         return super(RecordCreateView, self).form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(RecordCreateView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+        context['add_new_record'] = True
+
+        return context    
 
 
 class RecordEditView(UpdateView):
@@ -434,6 +470,18 @@ class RecordEditView(UpdateView):
                 pytz.timezone(form.instance.end_time_tz))
 
         return super(RecordEditView, self).form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(RecordEditView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+
+        return context    
+
 
 
 class RecordDeleteView(DeleteView):
@@ -473,6 +521,18 @@ class RecordDeleteView(DeleteView):
 
     def get_success_url(self):
         return self.project.get_absolute_url()
+    
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(RecordDeleteView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+
+        return context   
 
 
 class RecordCloseView(View, SingleObjectMixin):
@@ -563,6 +623,19 @@ class CategoryCreateView(CreateView):
 
         self.object.save()
         return super(CategoryCreateView, self).form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(CategoryCreateView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+        context['command'] = 'Add'
+        context['add_category'] = True
+
+        return context       
 
 
 class CategoryEditView(UpdateView):
@@ -616,7 +689,19 @@ class CategoryEditView(UpdateView):
         self.object.slug = slugify(self.object.name)
 
         self.object.save()
-        return super(CategoryEditView, self).form_valid(form)
+        return super(CategoryEditView, self).form_valid(form)    
+
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(CategoryEditView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+        context['command'] = 'Edit'
+
+        return context        
 
 
 class CategoryDeleteView(DeleteView):
@@ -657,6 +742,17 @@ class CategoryDeleteView(DeleteView):
 
     def get_success_url(self):
         return self.project.get_absolute_url()
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(CategoryDeleteView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+
+        return context      
 
 
 class CategoryDetailView(DetailView):
@@ -703,6 +799,8 @@ class CategoryDetailView(DetailView):
 
         context['closed_records'] = closed_records
         context['open_records'] = open_records
+        context['project'] = self.project
+        context['selected_category'] = self.object
 
         return context
 
