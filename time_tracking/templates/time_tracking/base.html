@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
-{%block title %}Time Tracking{% endblock %}
+{% block title %}Time Tracking{%if project %} - {{project}}{%endif%}{% endblock %}
+{% block brand %}{%if project %}{{project}}{%else%}Time Tracking{%endif%}{% endblock %}
+{% block brand_url %}{%if project%}{{project.get_absolute_url}}{%else%}#{%endif%}{% endblock %}
 
 {% block menu %}
 
@@ -15,7 +17,7 @@
 		</li>
 		{% if project.active %}
 		<li{% if add_new_record %} class="active"{%endif%}>
-			<a href="{{ project.get_add_record_url }}">Add New Records</a>
+			<a href="{{ project.get_add_record_url }}">Add New Record</a>
 		</li>
 		<li class="divider"></li>
 		{% endif %}

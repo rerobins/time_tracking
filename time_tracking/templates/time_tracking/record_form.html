@@ -1,16 +1,77 @@
 {% extends "time_tracking/base.html" %}
 
-{% block title %}Time Tracking - {{project}}{% endblock %}
-
-{% block brand %}{{project}}{% endblock %}
-
 {% block content %}
 
-<h1>Edit Record Form</h1>
+<div class="row-fluid">
+	
+	<div class="page-header">
+		<h1>{{command}} New Record</h1>
+	</div>
 
-<form action="" method="post">{% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="Submit" />
-</form>
+	
+	<div class="span12">
 
+		{% if form.non_field_errors %}
+		<div class="alert alert-error">
+  			<strong>ERROR:</strong> {{ form.non_field_errors|striptags }}
+		</div>
+		{% endif %}
+		
+		
+		<form method="post" action="." class="form-horizontal">
+			{% csrf_token %}
+			
+			{% include "time_tracking/include/form_template.html" with field=form.brief_description %}
+
+			<fieldset>
+
+				<legend>
+					Start
+				</legend>
+				
+				{% include "time_tracking/include/date_time_form_template.html" with field=form.start_time %}
+				
+				{% include "time_tracking/include/form_template.html" with field=form.start_time_tz %}
+								
+			</fieldset>
+			
+			<fieldset>
+
+				<legend>
+					Finish
+				</legend>
+				
+				{% include "time_tracking/include/date_time_form_template.html" with field=form.end_time %}
+				
+				{% include "time_tracking/include/form_template.html" with field=form.end_time_tz %}
+								
+			</fieldset>
+			
+			<fieldset>
+
+				<legend>
+					Other
+				</legend>
+				
+				{% include "time_tracking/include/form_template.html" with field=form.category %}
+				
+				{% include "time_tracking/include/form_template.html" with field=form.location %}
+				
+				{% include "time_tracking/include/form_template.html" with field=form.description %}
+								
+			</fieldset>			
+
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary">
+					{{command}} Record
+				</button>
+				<button type="button" class="btn">
+					Cancel
+				</button>
+			</div>
+		</form>
+		
+	</div>
+</div>
 {% endblock %}
+

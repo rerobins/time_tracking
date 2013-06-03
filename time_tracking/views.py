@@ -101,6 +101,17 @@ class ProjectCreateView(CreateView):
         self.user = request.user
         self.initial['owner'] = request.user
         return super(ProjectCreateView, self).post(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(ProjectCreateView, self).get_context_data(**kwargs)
+
+        context['command'] = 'Add'
+
+        return context
 
 
 class ProjectEditView(UpdateView):
@@ -158,6 +169,7 @@ class ProjectEditView(UpdateView):
         context = super(ProjectEditView, self).get_context_data(**kwargs)
         
         context['edit_project'] = True
+        context['command'] = 'Edit'
 
         return context    
 
@@ -397,6 +409,7 @@ class RecordCreateView(CreateView):
 
         context['project'] = self.project
         context['add_new_record'] = True
+        context['command'] = 'Add'
 
         return context    
 
@@ -479,6 +492,7 @@ class RecordEditView(UpdateView):
         context = super(RecordEditView, self).get_context_data(**kwargs)
 
         context['project'] = self.project
+        context['command'] = 'Edit'
 
         return context    
 
