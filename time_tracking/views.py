@@ -279,6 +279,7 @@ class ProjectCopyView(CreateView):
 
         context['project'] = self.source_project
         context['copy_project'] = True
+        context['command'] = 'Copy'
 
         return context
     

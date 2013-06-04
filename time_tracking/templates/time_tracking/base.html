@@ -22,10 +22,10 @@
 		<li class="divider"></li>
 		{% endif %}
 		<li{% if edit_project %} class="active"{%endif%}>
-			<a href="{{ project.get_edit_url }}">Edit</a>
+			<a href="{{ project.get_edit_url }}">Edit Project</a>
 		</li>
 		<li{% if delete_project %} class="active"{%endif%}>
-			<a href="{{ project.get_delete_url }}">Delete</a>
+			<a href="{{ project.get_delete_url }}">Delete Project</a>
 		</li>
 		<li{% if copy_project %} class="active"{%endif%}>
 			<a href="{{ project.get_copy_project_url }}">Copy Project</a>
@@ -33,9 +33,6 @@
 		<li class="divider"></li>
 		<li{% if add_category %} class="active"{%endif%}>
 			<a href="{{ project.get_add_category_url }}">Add Category</a>
-		</li>
-		<li{% if add_location %} class="active"{%endif%}>
-			Add Location
 		</li>
 	</ul>
 </div>
@@ -59,6 +56,10 @@
 		{% for location in locations %}
 		<li>{{location}}</li>
 		{% endfor %}
+		<li class="divider"></li>
+		<li{% if add_location %} class="active"{%endif%}>
+			Add Location
+		</li>
 	</ul>
 </div>
 

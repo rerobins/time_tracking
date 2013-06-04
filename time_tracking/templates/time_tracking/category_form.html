@@ -2,12 +2,36 @@
 
 {% block content %}
 
-<h1>{{command}} Category Form</h1>
+<div class="row-fluid">
+	
+	<div class="page-header">
+		<h1>{{command}} Category</h1>
+	</div>
 
-<form action="." method="post" class="form-horizontal">
-	{% csrf_token %}
-	{{ form.as_p }}
-	<button type="submit" class="btn btn-primary">Submit</button>
-</form>
+	<div class="span12">
+
+		{% if form.non_field_errors %}
+		<div class="alert alert-error">
+  			<strong>ERROR:</strong> {{ form.non_field_errors|striptags }}
+		</div>
+		{% endif %}
+		
+		<form method="post" action="." class="form-horizontal">
+			{% csrf_token %}
+					
+			{% include "time_tracking/include/form_template.html" with field=form.name %}
+
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary">
+					{{command}} Category
+				</button>
+				<a href="{{project.get_absolute_url}}" class="btn">
+					Cancel
+				</a>
+			</div>
+		</form>
+		
+	</div>
+</div>
 
 {% endblock %}

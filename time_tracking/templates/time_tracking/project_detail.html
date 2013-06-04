@@ -24,6 +24,7 @@
 	<div class="span6">
 		<div class="well well-small">
 			<h3>Open Records</h3>
+			{% if open_records %}
 			<table class="table table-condensed">
 				<thead>
 					<tr>
@@ -57,6 +58,9 @@
 					{% endfor %}
 				</tbody>
 			</table>
+			{% else %}
+			<p>None</p>	
+			{% endif %}
 		</div>
 
 	</div>
@@ -74,6 +78,7 @@
 	<div class="span6">
 		<div class="well well-small">
 			<h3>Closed Records</h3>
+			{% if closed_records %}
 			<table class="table table-condensed">
 				<thead>
 					<tr>
@@ -107,7 +112,9 @@
 				{% endfor %}
 				</tbody>	
 			</table>
-			
+			{% else %}
+			<p>None</p>
+			{% endif %}
 		</div>
 	</div>
 
