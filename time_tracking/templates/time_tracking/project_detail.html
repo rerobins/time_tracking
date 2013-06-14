@@ -1,5 +1,7 @@
 {% extends "time_tracking/base.html" %}
 
+{% load staticfiles %}
+
 {% block title %}Time Tracking - {{project}}{% endblock %}
 
 {% block brand %}{{project}}{% endblock %}
@@ -121,9 +123,55 @@
 	<div class="span6">
 		<div class="well well-small">
 			<h3>Task Breakdown</h3>
+			{% if categories %}
+			<div id="placeholder" style="height: 300px">
+				&nbsp;
+			</div>
+			{% else %}
+			<div class="span12">
+				<h2 class="text-center">No Data</h2>
+			</div>
+			{% endif %}
 		</div>
 	</div>
 
 </div>
 
 {% endblock %}
+
+{% block extrascript %}
+	
+	<script type="text/javascript" src="{% static "js/jquery.flot.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/jquery.flot.pie.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/bootstrap-datepicker.js" %}"></script>
+	
+	<script type="text/javascript">
+	
+	{% if categories %}
+	
+		$(function() {
+	
+			
+				var data = [];
+				{% for key, value in categories.items %}
+				data[{{forloop.counter0}}] = {
+					label: "{{key}}",
+					data: {{value}}
+				}
+			{% endfor %}
+
+				$.plot("#placeholder", data, {
+				    series: {
+				        pie: {
+				            show: true
+				        }
+				    }
+				});
+			
+		});
+		
+		{% endif %}
+	</script>
+
+{% endblock %}
+				

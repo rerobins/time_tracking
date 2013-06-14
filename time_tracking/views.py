@@ -322,6 +322,16 @@ class ProjectDetailView(DetailView):
         context['closed_records'] = closed_records
         context['open_records'] = open_records
         context['project_overview'] = True
+        
+        categories = {}
+        for record in closed_records:
+            record_duration = (record.end_time-record.start_time).total_seconds()
+            if record.category in categories:
+                categories[record.category] += record_duration
+            else:
+                categories[record.category] = record_duration
+                
+        context['categories'] = categories
 
         return context
 
