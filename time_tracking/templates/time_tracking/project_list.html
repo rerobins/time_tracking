@@ -1,21 +1,49 @@
 {% extends "time_tracking/base.html" %}
 
+{% block menu %}
+
+<div class="well" style="padding: 8px 0;">
+	<ul class="nav nav-list">
+		<li class="nav-header">
+			Commands
+		</li>
+		<li>
+			<a href="{% url 'project_create_view' %}">Add Project</a>
+		</li>
+	</ul>
+</div>
+{% endblock %}
+
 {% block content %}
 
-<p><a href="{% url 'project_create_view' %}">Create Project</a></p>
+<div class="row-fluid">
 
-<h1>Active Projects</h1>
-{% for o in active_projects %}
+	<div class="span5">
+		<div class="well well-small">
+			<h3>Active Projects</h3>
+			{% for o in active_projects %}
 
-    <p><a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}</p>
+			<p>
+				<a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}
+			</p>
 
-{% endfor %}
+			{% endfor %}
+		</div>
+	</div>
 
-<h1>Deactive Projects</h1>
-{% for o in deactive_projects %}
+	<div class="span5">
+		<div class="well well-small">
+			<h3>Deactive Projects</h3>
+			{% for o in deactive_projects %}
 
-    <p><a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}</p>
+			<p>
+				<a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}
+			</p>
 
-{% endfor %}
+			{% endfor %}
+		</div>
+	</div>
+
+</div>
 
 {% endblock %}
