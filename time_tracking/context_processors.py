@@ -34,6 +34,4 @@ def time_tracker(request):
         locations = Location.objects.filter(owner=request.user)
         return_value['locations'] = locations
         
-        
-
     return return_value
