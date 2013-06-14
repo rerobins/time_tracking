@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from django.template.defaultfilters import slugify
-
+from django import forms
 from django.forms import ModelForm
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -63,7 +63,7 @@ class ProjectForm(ModelForm):
         fields = ('name', 'active', )
 
 
-class RecordForm(ModelForm):
+class RecordEditForm(ModelForm):
     """
         Form that will allow for the manipulation of the record objects.
     """
@@ -73,7 +73,7 @@ class RecordForm(ModelForm):
 
         end_time_tz = timezone.get_current_timezone()
 
-        if cleaned_data['end_time']:
+        if 'end_time' in cleaned_data and cleaned_data['end_time'] != None:
             start_time = convert_time(cleaned_data['start_time'],
                 pytz.timezone(cleaned_data['start_time_tz']))
 
@@ -92,7 +92,45 @@ class RecordForm(ModelForm):
         model = Record
         fields = ('start_time', 'start_time_tz', 'end_time', 'end_time_tz',
             'brief_description', 'category', 'location', 'description')
+        widgets = {
+            'start_time': forms.SplitDateTimeWidget(),
+            'end_time': forms.SplitDateTimeWidget(),
+        }
 
+
+class RecordCreateForm(ModelForm):
+    """
+        Form that will allow for the manipulation of the record objects.
+    """
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+
+        end_time_tz = timezone.get_current_timezone()
+
+        if 'end_time' in cleaned_data and cleaned_data['end_time'] != None:
+            start_time = convert_time(cleaned_data['start_time'],
+                pytz.timezone(cleaned_data['start_time_tz']))
+
+            if cleaned_data['end_time_tz']:
+                end_time_tz = pytz.timezone(cleaned_data['end_time_tz'])
+
+            end_time = convert_time(cleaned_data['end_time'],
+                end_time_tz)
+
+            if end_time < start_time:
+                raise ValidationError("End time cannot be before start time")
+
+        return cleaned_data
+
+    class Meta:
+        model = Record
+        fields = ('start_time', 'start_time_tz', 'end_time', 'end_time_tz',
+            'brief_description', 'category', 'location', 'description')
+        widgets = {
+            'start_time': forms.SplitDateTimeWidget(),
+            'end_time': forms.SplitDateTimeWidget(),
+        }
 
 class CategoryForm(ModelForm):
     """

@@ -9,7 +9,7 @@
 	<label class="control-label" for="{{field.auto_id}}_0">{{field.label}}</label>
 	
 	<div class="controls">
-		<div class="input-append date" id="date_0_picker" 
+		<div class="input-append date" id="{{field.auto_id}}_0_picker" 
 			data-date="{% if field.value.0 %}{{field.value.0}}{%else%}{{field.value|date:"Y-m-d"}}{%endif%}" 
 			data-date-format="yyyy-mm-dd">
 			<input id="{{field.auto_id}}_0" type="text" 
@@ -20,7 +20,7 @@
 
 		<div class="input-append bootstrap-timepicker">
 			<input id="{{field.auto_id}}_1" name="{{field.name}}_1" type="text" class="input-small" 
-			value="{% if field.value.1 %}{{field.value.1}}{%else%}{{field.value|time:"H:i"}}{%endif%}" readonly>
+			value="{% if field.value.1 %}{{field.value.1}}{% elif field.value %}{{field.value|time:"H:i"}}{%endif%}" readonly>
 			<span class="add-on"><i class="icon-time"></i></span>
 		</div>
 		

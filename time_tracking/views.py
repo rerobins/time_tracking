@@ -28,8 +28,8 @@ import pytz
 
 from django.shortcuts import get_object_or_404
 
-from time_tracking.forms import ProjectForm, RecordForm, CategoryForm
-from time_tracking.forms import LocationForm, convert_time
+from time_tracking.forms import ProjectForm, RecordEditForm, CategoryForm
+from time_tracking.forms import LocationForm, convert_time, RecordCreateForm
 from time_tracking.models import Project, Record, Category, Location
 
 from django.utils import timezone
@@ -331,7 +331,7 @@ class RecordCreateView(CreateView):
         Overrideing the create view in order to store and retrieve the context
         data of the project that the record belongs to.
     """
-    form_class = RecordForm
+    form_class = RecordCreateForm
     model = Record
 
     def post(self, request, *args, **kwargs):
@@ -354,7 +354,7 @@ class RecordCreateView(CreateView):
         self.project = get_object_or_404(Project,
             slug=self.kwargs.get('project_slug', None),
             owner=self.owner)
-        self.initial['start_time'] = timezone.now()
+        #self.initial['start_time'] = timezone.now()
         self.initial['start_time_tz'] = timezone.get_current_timezone()
         self.initial['end_time_tz'] = timezone.get_current_timezone()
 
@@ -420,7 +420,7 @@ class RecordEditView(UpdateView):
         Overrideing the create view in order to store and retrieve the context
         data of the project that the record belongs to.
     """
-    form_class = RecordForm
+    form_class = RecordEditForm
     model = Record
 
     def post(self, request, *args, **kwargs):

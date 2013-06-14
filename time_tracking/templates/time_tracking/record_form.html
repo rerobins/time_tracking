@@ -1,5 +1,12 @@
 {% extends "time_tracking/base.html" %}
 
+{% load staticfiles %}
+
+{% block extrahead %}
+<link href="{% static "css/datepicker.css" %}" rel="stylesheet" media="screen">
+<link href="{% static "css/bootstrap-timepicker.min.css" %}" rel="stylesheet" media="screen">
+{% endblock %}
+
 {% block content %}
 
 <div class="row-fluid">
@@ -75,3 +82,29 @@
 </div>
 {% endblock %}
 
+{% block extrascript %}
+	<script type="text/javascript" src="{% static "js/bootstrap-datepicker.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/bootstrap-timepicker.min.js" %}"></script>
+	
+	<script type="text/javascript">
+	
+		$(function() {
+			
+			$('#id_start_time_0_picker').datepicker();
+			$('#id_start_time_1').timepicker({
+                minuteStep: 1,
+                template: 'modal',
+                showSeconds: false,
+                showMeridian: false
+            });
+            $('#id_end_time_0_picker').datepicker();
+			$('#id_end_time_1').timepicker({
+                minuteStep: 1,
+                template: 'modal',
+                showSeconds: false,
+                showMeridian: false,
+                defaultTime: false,
+            });
+		});
+	</script>
+{% endblock %}
