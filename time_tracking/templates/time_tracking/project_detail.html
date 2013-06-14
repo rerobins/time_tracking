@@ -123,15 +123,14 @@
 	<div class="span6">
 		<div class="well well-small">
 			<h3>Task Breakdown</h3>
-			{% if categories %}
+			
 			<div id="placeholder" style="height: 300px">
+				{% if categories %}
 				&nbsp;
-			</div>
-			{% else %}
-			<div class="span12">
+				{% else %}
 				<h2 class="text-center">No Data</h2>
+				{% endif %}
 			</div>
-			{% endif %}
 		</div>
 	</div>
 
