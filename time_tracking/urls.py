@@ -21,16 +21,16 @@ from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-from time_tracking.views import ProjectCreateView, ProjectDetailView
-from time_tracking.views import ProjectEditView, ProjectDeleteView
-from time_tracking.views import ProjectListView, ProjectCopyView
-from time_tracking.views import CategoryCreateView, CategoryDetailView
-from time_tracking.views import CategoryEditView, CategoryDeleteView
-from time_tracking.views import RecordCreateView, RecordDeleteView
-from time_tracking.views import RecordCloseView, RecordEditView
-from time_tracking.views import LocationCreateView, LocationDetailView
-from time_tracking.views import LocationEditView, LocationDeleteView
-from time_tracking.views import LocationListView
+from time_tracking.views.project import ProjectCreateView, ProjectDetailView
+from time_tracking.views.project import ProjectEditView, ProjectDeleteView
+from time_tracking.views.project import ProjectListView, ProjectCopyView
+from time_tracking.views.category import CategoryCreateView, CategoryDetailView
+from time_tracking.views.category import CategoryEditView, CategoryDeleteView
+from time_tracking.views.record import RecordCreateView, RecordDeleteView
+from time_tracking.views.record import RecordCloseView, RecordEditView
+from time_tracking.views.location import LocationCreateView, LocationDetailView
+from time_tracking.views.location import LocationEditView, LocationDeleteView
+from time_tracking.views.location import LocationListView
 
 urlpatterns = patterns('',
 
