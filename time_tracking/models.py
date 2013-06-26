@@ -32,7 +32,7 @@ class Project(models.Model):
     owner = models.ForeignKey(User)
     name = models.CharField(max_length=50)
     slug = models.SlugField(editable=False)
-    active = models.BooleanField(default=True)
+    template = models.BooleanField(default=False)
     description = models.TextField(blank=True, default="")
 
     class Meta:

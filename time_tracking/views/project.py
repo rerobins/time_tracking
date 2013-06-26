@@ -40,7 +40,7 @@ class ProjectListView(ListView):
         """
             Return the list of active projects to display.
         """
-        return Project.objects.filter(active=True, owner=self.request.user)
+        return Project.objects.filter(template=False, owner=self.request.user)
 
     def get_context_data(self, **kwargs):
         """
@@ -49,7 +49,7 @@ class ProjectListView(ListView):
         """
         context = super(ProjectListView, self).get_context_data(**kwargs)
 
-        deactive_projects = Project.objects.filter(active=False,
+        deactive_projects = Project.objects.filter(template=True,
             owner=self.request.user)
 
         context['deactive_projects'] = deactive_projects

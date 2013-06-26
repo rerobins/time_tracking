@@ -60,7 +60,7 @@ class ProjectForm(ModelForm):
 
     class Meta:
         model = Project
-        fields = ('name', 'active', 'description', )
+        fields = ('name', 'template', 'description', )
 
 
 class RecordEditForm(ModelForm):
@@ -184,7 +184,7 @@ class LocationForm(ModelForm):
         ## owned by that user.
         try:
             Location.objects.get(slug=test_slug,
-                owner=self.initial['owner'])
+                project=self.initial['project'])
         except:
             pass
         else:

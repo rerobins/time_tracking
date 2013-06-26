@@ -19,9 +19,16 @@
 		<form method="post" action="." class="form-horizontal">
 			{% csrf_token %}
 					
-			{% include "time_tracking/include/form_template.html" with field=form.name %}
-			{% include "time_tracking/include/form_template.html" with field=form.description %}
-			{% include "time_tracking/include/form_template.html" with field=form.active %}				
+			<fieldset>
+				<legend>Details</legend>
+				{% include "time_tracking/include/form_template.html" with field=form.name %}
+				{% include "time_tracking/include/form_template.html" with field=form.description %}
+			</fieldset>
+			
+			<fieldset>
+				<legend>Optional</legend>
+				{% include "time_tracking/include/form_template.html" with field=form.template %}
+			</fieldset>				
 
 			<div class="form-actions">
 				<button type="submit" class="btn btn-primary">

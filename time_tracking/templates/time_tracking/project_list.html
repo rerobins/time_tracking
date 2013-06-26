@@ -23,13 +23,20 @@
 	<div class="span5">
 		<div class="well well-small">
 			<h3>Active Projects</h3>
-			{% for o in active_projects %}
+			{% if active_projects %}
+				<dl>
+				{% for o in active_projects %}
 
-			<p>
-				<a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}
-			</p>
+				<dt>
+					<a href="{{ o.get_absolute_url }}">{{o.name}}</a>
+				</dt>
+				<dd>
+					{{o.description}}
+				</dd>
 
-			{% endfor %}
+				{% endfor %}
+				</dl>
+			{% endif %}
 		</div>
 	</div>
 
