@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="page-header">
-	<h1>{{command}} Category</h1>
+	<h1>{{command}} Project <small>{{project.name}}</small></h1>
 </div>
 
 <div class="row-fluid">
@@ -21,14 +21,21 @@
 					
 			{% include "time_tracking/include/form_template.html" with field=form.name %}
 			{% include "time_tracking/include/form_template.html" with field=form.description %}
+			{% include "time_tracking/include/form_template.html" with field=form.active %}				
 
 			<div class="form-actions">
 				<button type="submit" class="btn btn-primary">
-					{{command}} Category
+					{{command}} Project
 				</button>
+				{% if project %}
 				<a href="{{project.get_absolute_url}}" class="btn">
 					Cancel
 				</a>
+				{% else %}
+				<a href="{% url 'project_list_view' %}" class="btn">
+					Cancel
+				</a>
+				{% endif %}
 			</div>
 		</form>
 		

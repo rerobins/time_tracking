@@ -218,6 +218,7 @@ class ProjectCopyView(CreateView):
     """
     form_class = ProjectForm
     model = Project
+    template_name = "time_tracking/project_copy.html"
 
     def form_valid(self, form):
         """

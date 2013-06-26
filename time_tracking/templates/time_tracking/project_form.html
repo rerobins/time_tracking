@@ -2,12 +2,12 @@
 
 {% block content %}
 
+<div class="page-header">
+	<h1>{{command}} Project</h1>
+</div>
+
 <div class="row-fluid">
 	
-	<div class="page-header">
-		<h1>{{command}} Project</h1>
-	</div>
-
 	<div class="span12">
 
 		{% if form.non_field_errors %}
@@ -20,7 +20,8 @@
 			{% csrf_token %}
 					
 			{% include "time_tracking/include/form_template.html" with field=form.name %}
-			{% include "time_tracking/include/form_template.html" with field=form.active %}		
+			{% include "time_tracking/include/form_template.html" with field=form.description %}
+			{% include "time_tracking/include/form_template.html" with field=form.active %}				
 
 			<div class="form-actions">
 				<button type="submit" class="btn btn-primary">

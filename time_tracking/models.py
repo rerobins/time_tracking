@@ -95,6 +95,7 @@ class Category(models.Model):
     project = models.ForeignKey(Project)
     name = models.CharField(max_length=50)
     slug = models.SlugField(editable=False)
+    description = models.TextField(blank=True, default="")
 
     class Meta:
         unique_together = (('slug', 'project'),)
@@ -140,7 +141,8 @@ class Location(models.Model):
     project = models.ForeignKey(Project)
     name = models.CharField(max_length=50)
     slug = models.SlugField(editable=False)
-    location = models.CharField(max_length=255)
+    address = models.CharField(max_length=255, blank=True, default="")
+    description = models.TextField(blank=True, default="")
 
     class Meta:
         unique_together = (('project', 'slug'),)
@@ -151,21 +153,24 @@ class Location(models.Model):
             Return the absolute url for the detail view of this object.
         """
         return reverse('location_detail_view',
-            kwargs={'location_slug': self.slug})
+            kwargs={'project_slug': self.project.slug,
+                    'location_slug': self.slug})
 
     def get_edit_url(self):
         """
             Return the absolute url for the editing of this object.
         """
         return reverse('location_edit_view',
-            kwargs={'location_slug': self.slug})
+            kwargs={'project_slug': self.project.slug,
+                    'location_slug': self.slug})
 
     def get_delete_url(self):
         """
             Return the absolute url for the deleting of this object.
         """
         return reverse('location_delete_view',
-            kwargs={'location_slug': self.slug})
+            kwargs={'project_slug': self.project.slug,
+                    'location_slug': self.slug})
 
     def __unicode__(self):
         return self.name

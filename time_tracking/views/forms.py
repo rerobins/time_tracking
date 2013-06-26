@@ -60,7 +60,7 @@ class ProjectForm(ModelForm):
 
     class Meta:
         model = Project
-        fields = ('name', 'active', )
+        fields = ('name', 'active', 'description', )
 
 
 class RecordEditForm(ModelForm):
@@ -161,7 +161,7 @@ class CategoryForm(ModelForm):
 
     class Meta:
         model = Category
-        fields = ('name',)
+        fields = ('name', 'description', )
 
 
 class LocationForm(ModelForm):
@@ -194,4 +194,4 @@ class LocationForm(ModelForm):
 
     class Meta:
         model = Location
-        fields = ('name', 'location',)
+        fields = ('name', 'address', 'description', ) 
