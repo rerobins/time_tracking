@@ -25,8 +25,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
 from time_tracking.views.forms import ProjectForm
-from time_tracking.models import Project, Record, Category
-
+from time_tracking.models import Project, Record, Category, Location
 
 
 class ProjectListView(ListView):
@@ -278,7 +277,6 @@ class ProjectCopyView(CreateView):
         return context
     
 
-
 class ProjectDetailView(DetailView):
     """
         Overriding the Detail View generic class to provide the record
@@ -316,6 +314,7 @@ class ProjectDetailView(DetailView):
         context['closed_records'] = closed_records
         context['open_records'] = open_records
         context['project_overview'] = True
+        context['locations'] = Location.objects.filter(project=self.object)
         
         categories = {}
         for record in closed_records:

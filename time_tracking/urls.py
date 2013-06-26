@@ -89,18 +89,18 @@ urlpatterns = patterns('',
         name='category_delete_view'),
 
     ## Location manipulation
-    url(r'^locations/$', login_required(LocationListView.as_view()),
+    url(r'^project/(?P<project_slug>[^/]+)/locations/$', login_required(LocationListView.as_view()),
         name='location_list_view'),
-    url(r'^add/location/$', login_required(
+    url(r'^add/project/(?P<project_slug>[^/]+)/location/$', login_required(
         LocationCreateView.as_view()),
             name='location_create_view'),
-    url(r'^location/(?P<location_slug>[^/]+)/$', login_required(
+    url(r'^project/(?P<project_slug>[^/]+)/location/(?P<location_slug>[^/]+)/$', login_required(
         LocationDetailView.as_view()),
         name='location_detail_view'),
-    url(r'^edit/location/(?P<location_slug>[^/]+)/$', login_required(
+    url(r'^edit/project/(?P<project_slug>[^/]+)/location/(?P<location_slug>[^/]+)/$', login_required(
         LocationEditView.as_view()),
         name='location_edit_view'),
-    url(r'^delete/location/(?P<location_slug>[^/]+)/$', login_required(
+    url(r'^delete/project/(?P<project_slug>[^/]+)/location/(?P<location_slug>[^/]+)/$', login_required(
         LocationDeleteView.as_view()),
         name='location_delete_view'),
 

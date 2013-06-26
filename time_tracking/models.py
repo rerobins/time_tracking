@@ -33,6 +33,7 @@ class Project(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(editable=False)
     active = models.BooleanField(default=True)
+    description = models.TextField(blank=True, default="")
 
     class Meta:
         unique_together = (('slug', 'owner'),)
@@ -136,13 +137,13 @@ class Location(models.Model):
         Location that can be applied to records to show that the time was spent
         in a specific location.
     """
-    owner = models.ForeignKey(User)
+    project = models.ForeignKey(Project)
     name = models.CharField(max_length=50)
     slug = models.SlugField(editable=False)
     location = models.CharField(max_length=255)
 
     class Meta:
-        unique_together = (('owner', 'slug'),)
+        unique_together = (('project', 'slug'),)
         ordering = ['name']
 
     def get_absolute_url(self):
