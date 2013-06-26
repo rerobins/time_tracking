@@ -1,7 +1,6 @@
 {% extends "time_tracking/base.html" %}
 
 {% block menu %}
-
 <div class="well" style="padding: 8px 0;">
 	<ul class="nav nav-list">
 		<li class="nav-header">
@@ -15,14 +14,11 @@
 {% endblock %}
 
 {% block content %}
-
-
-
 <div class="row-fluid">
 
 	<div class="span5">
 		<div class="well well-small">
-			<h3>Active Projects</h3>
+			<h3>Projects</h3>
 			{% if active_projects %}
 				<dl>
 				{% for o in active_projects %}
@@ -31,7 +27,7 @@
 					<a href="{{ o.get_absolute_url }}">{{o.name}}</a>
 				</dt>
 				<dd>
-					{{o.description}}
+					{{o.description|truncatewords_html:10}}
 				</dd>
 
 				{% endfor %}
@@ -42,17 +38,23 @@
 
 	<div class="span5">
 		<div class="well well-small">
-			<h3>Deactive Projects</h3>
-			{% for o in deactive_projects %}
+			<h3>Templates</h3>
+			{% if templates %}
+				<dl>
+				{% for o in templates %}
 
-			<p>
-				<a href="{{ o.get_absolute_url }}">{{o.name}}</a> - {{ o.slug }}
-			</p>
+				<dt>
+					<a href="{{ o.get_absolute_url }}">{{o.name}}</a>
+				</dt>
+				<dd>
+					{{o.description|truncatewords_html:10}}
+				</dd>
 
-			{% endfor %}
+				{% endfor %}
+				</dl>
+			{% endif %}
 		</div>
 	</div>
 
 </div>
-
 {% endblock %}

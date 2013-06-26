@@ -52,7 +52,7 @@ class ProjectListView(ListView):
         deactive_projects = Project.objects.filter(template=True,
             owner=self.request.user)
 
-        context['deactive_projects'] = deactive_projects
+        context['templates'] = deactive_projects
 
         return context
 
