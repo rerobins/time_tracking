@@ -54,11 +54,13 @@
 			Locations
 		</li>
 		{% for location in locations %}
-		<li>{{location}}</li>
+		<li{% if location == selected_location %} class="active"{%endif%}>
+			<a href="{{location.get_absolute_url}}">{{location}}</a>
+		</li>
 		{% endfor %}
 		<li class="divider"></li>
 		<li{% if add_location %} class="active"{%endif%}>
-			Add Location
+			<a href="{{ project.get_add_location_url }}">Add Location</a>
 		</li>
 	</ul>
 </div>

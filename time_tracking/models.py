@@ -66,6 +66,13 @@ class Project(models.Model):
         """
         return reverse('category_create_view',
             kwargs={'project_slug': self.slug})
+        
+    def get_add_location_url(self):
+        """
+            Return URL for adding a locations to this project.
+        """
+        return reverse('location_create_view',
+            kwargs={'project_slug': self.slug})
 
     def get_copy_project_url(self):
         """

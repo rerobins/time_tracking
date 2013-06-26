@@ -13,6 +13,6 @@
 
 <p>Location: {{ object.location }}</p>
 
-<p><a href="{% url 'location_list_view' %}">Back to Location List</a></p>
+<p><a href="{{ object.project.get_absolute_url }}">Back to Project</a></p>
 
 {% endblock %}

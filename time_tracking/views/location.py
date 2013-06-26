@@ -23,7 +23,9 @@ from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
 
 from time_tracking.views.forms import LocationForm
-from time_tracking.models import Location
+from time_tracking.models import Location, Project
+
+from django.shortcuts import get_object_or_404
 
 
 class LocationListView(ListView):
@@ -47,13 +49,38 @@ class LocationCreateView(CreateView):
     """
     form_class = LocationForm
     model = Location
+    
+    def post(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the post
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        self.initial['project'] = self.project
+        return super(LocationCreateView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+        self.initial['project'] = self.project
+        return super(LocationCreateView, self).get(request, *args, **kwargs)
+
 
     def form_valid(self, form):
         """
             Sets the slug to the correct value based on the name of the object
             that was just created.
         """
-        form.instance.owner = self.request.user
+        form.instance.project = self.project
 
         self.object = form.save(commit=False)
         self.object.slug = slugify(self.object.name)
@@ -61,6 +88,19 @@ class LocationCreateView(CreateView):
         self.object.save()
 
         return super(LocationCreateView, self).form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            deactivated projects as well.
+        """
+        context = super(LocationCreateView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+        context['command'] = 'Add'
+        context['add_location'] = True
+
+        return context 
 
 
 class LocationEditView(UpdateView):
@@ -91,6 +131,18 @@ class LocationEditView(UpdateView):
             user that is making the request.
         """
         return self.model.objects.filter(owner=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            project as well.
+        """
+        context = super(LocationEditView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+        context['command'] = 'Edit'
+
+        return context   
 
 
 class LocationDeleteView(DeleteView):
@@ -120,10 +172,33 @@ class LocationDetailView(DetailView):
 
     model = Location
     slug_url_kwarg = 'location_slug'
+    
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.owner = request.user
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=self.owner)
+
+        return super(LocationDetailView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
         """
-        return self.model.objects.filter(owner=self.request.user)
+        return self.model.objects.filter(project=self.project)
+    
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            project as well.
+        """
+        context = super(LocationDetailView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+
+        return context       
