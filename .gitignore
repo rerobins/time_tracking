@@ -39,3 +39,5 @@ Icon?
 ehthumbs.db
 Thumbs.db
 local_settings.py
+.project
+.pydevproject
