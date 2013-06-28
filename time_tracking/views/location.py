@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.views.generic import CreateView, DetailView, DeleteView, UpdateView
 from django.views.generic import ListView
 from django.template.defaultfilters import slugify
-from django.core.urlresolvers import reverse
 
 from time_tracking.views.forms import LocationForm
 from time_tracking.models import Location, Project
@@ -110,6 +109,35 @@ class LocationEditView(UpdateView):
     form_class = LocationForm
     model = Location
     slug_url_kwarg = 'location_slug'
+    
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+
+        return super(LocationEditView, self).get(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+
+        return super(LocationEditView, self).post(request, *args, **kwargs)
+
+    def get_queryset(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return self.model.objects.filter(project=self.project)
 
     def form_valid(self, form):
         """
@@ -124,13 +152,6 @@ class LocationEditView(UpdateView):
         self.object.save()
 
         return super(LocationEditView, self).form_valid(form)
-
-    def get_queryset(self):
-        """
-            Limiting the requests to only the objects that are owned by the
-            user that is making the request.
-        """
-        return self.model.objects.filter(owner=self.request.user)
     
     def get_context_data(self, **kwargs):
         """
@@ -151,16 +172,53 @@ class LocationDeleteView(DeleteView):
     """
     model = Location
     slug_url_kwarg = 'location_slug'
+    
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+
+        return super(LocationDeleteView, self).get(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+
+        return super(LocationDeleteView, self).post(request, *args, **kwargs)
 
     def get_queryset(self):
         """
             Limiting the requests to only the objects that are owned by the
             user that is making the request.
         """
-        return self.model.objects.filter(owner=self.request.user)
+        return self.model.objects.filter(project=self.project)
+
+    def get_context_data(self, **kwargs):
+        """
+            Adding additional context to the view in order to show the
+            project as well.
+        """
+        context = super(LocationDeleteView, self).get_context_data(**kwargs)
+
+        context['project'] = self.project
+        context['selected'] = self.object
+
+        return context 
 
     def get_success_url(self):
-        return reverse('location_list_view')
+        """
+            Override success redirection.
+        """
+        return self.project.get_absolute_url()
 
 
 class LocationDetailView(DetailView):
@@ -178,10 +236,9 @@ class LocationDetailView(DetailView):
             Adding the project object to the base of this view when the get
             is called.
         """
-        self.owner = request.user
         self.project = get_object_or_404(Project,
             slug=self.kwargs.get('project_slug', None),
-            owner=self.owner)
+            owner=request.user)
 
         return super(LocationDetailView, self).get(request, *args, **kwargs)
 

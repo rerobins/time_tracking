@@ -28,7 +28,7 @@ from django.shortcuts import get_object_or_404
 from time_tracking.views.forms import RecordEditForm
 from time_tracking.views.forms import convert_time, RecordCreateForm
 from time_tracking.views.project import ProjectDetailView
-from time_tracking.models import Project, Record, Category
+from time_tracking.models import Project, Record, Category, Location
 
 from django.utils import timezone
 
@@ -76,6 +76,8 @@ class RecordCreateView(CreateView):
         form = super(RecordCreateView, self).get_form(form_class)
 
         form.fields['category'].queryset = Category.objects.filter(
+            project=self.project)
+        form.fields['location'].queryset = Location.objects.filter(
             project=self.project)
 
         return form
@@ -159,6 +161,8 @@ class RecordEditView(UpdateView):
         form = super(RecordEditView, self).get_form(form_class)
 
         form.fields['category'].queryset = Category.objects.filter(
+            project=self.project)
+        form.fields['location'].queryset = Location.objects.filter(
             project=self.project)
 
         return form
