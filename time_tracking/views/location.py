@@ -109,6 +109,35 @@ class LocationEditView(UpdateView):
     form_class = LocationForm
     model = Location
     slug_url_kwarg = 'location_slug'
+    
+    def get(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+
+        return super(LocationEditView, self).get(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        """
+            Adding the project object to the base of this view when the get
+            is called.
+        """
+        self.project = get_object_or_404(Project,
+            slug=self.kwargs.get('project_slug', None),
+            owner=request.user)
+
+        return super(LocationEditView, self).post(request, *args, **kwargs)
+
+    def get_queryset(self):
+        """
+            Limiting the requests to only the objects that are owned by the
+            user that is making the request.
+        """
+        return self.model.objects.filter(project=self.project)
 
     def form_valid(self, form):
         """
@@ -123,13 +152,6 @@ class LocationEditView(UpdateView):
         self.object.save()
 
         return super(LocationEditView, self).form_valid(form)
-
-    def get_queryset(self):
-        """
-            Limiting the requests to only the objects that are owned by the
-            user that is making the request.
-        """
-        return self.model.objects.filter(owner=self.request.user)
     
     def get_context_data(self, **kwargs):
         """
