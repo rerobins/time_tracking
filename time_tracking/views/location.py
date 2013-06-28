@@ -200,5 +200,6 @@ class LocationDetailView(DetailView):
         context = super(LocationDetailView, self).get_context_data(**kwargs)
 
         context['project'] = self.project
+        context['selected'] = self.object
 
         return context       

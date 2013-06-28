@@ -247,7 +247,7 @@ class CategoryDetailView(DetailView):
         context['closed_records'] = closed_records
         context['open_records'] = open_records
         context['project'] = self.project
-        context['selected_category'] = self.object
+        context['selected'] = self.object
 
         return context
 
