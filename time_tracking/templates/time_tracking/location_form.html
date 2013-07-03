@@ -4,6 +4,12 @@
 
 <h1>Edit Location Form</h1>
 
+{% if form.non_field_errors %}
+<div>
+    <strong>ERROR:</strong> {{ form.non_field_errors|striptags }}
+</div>
+{% endif %}
+
 <form action="" method="post">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Submit" />

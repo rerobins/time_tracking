@@ -132,6 +132,7 @@ class RecordCreateForm(ModelForm):
             'end_time': forms.SplitDateTimeWidget(),
         }
 
+
 class CategoryForm(ModelForm):
     """
         Form that will allow for the manipulation of the category objects.

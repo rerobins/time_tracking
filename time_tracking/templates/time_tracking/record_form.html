@@ -2,109 +2,19 @@
 
 {% load staticfiles %}
 
-{% block extrahead %}
-<link href="{% static "css/datepicker.css" %}" rel="stylesheet" media="screen">
-<link href="{% static "css/bootstrap-timepicker.min.css" %}" rel="stylesheet" media="screen">
-{% endblock %}
-
 {% block content %}
 
-<div class="row-fluid">
-	
-	<div class="page-header">
-		<h1>{{command}} New Record</h1>
-	</div>
+<h1>{{command}} Record</h1>
 
-	
-	<div class="span12">
-
-		{% if form.non_field_errors %}
-		<div class="alert alert-error">
-  			<strong>ERROR:</strong> {{ form.non_field_errors|striptags }}
-		</div>
-		{% endif %}
-		
-		
-		<form method="post" action="." class="form-horizontal">
-			{% csrf_token %}
-			
-			{% include "time_tracking/include/form_template.html" with field=form.brief_description %}
-
-			<fieldset>
-
-				<legend>
-					Start
-				</legend>
-				
-				{% include "time_tracking/include/date_time_form_template.html" with field=form.start_time %}
-				
-				{% include "time_tracking/include/form_template.html" with field=form.start_time_tz %}
-								
-			</fieldset>
-			
-			<fieldset>
-
-				<legend>
-					Finish
-				</legend>
-				
-				{% include "time_tracking/include/date_time_form_template.html" with field=form.end_time %}
-				
-				{% include "time_tracking/include/form_template.html" with field=form.end_time_tz %}
-								
-			</fieldset>
-			
-			<fieldset>
-
-				<legend>
-					Other
-				</legend>
-				
-				{% include "time_tracking/include/form_template.html" with field=form.category %}
-				
-				{% include "time_tracking/include/form_template.html" with field=form.location %}
-				
-				{% include "time_tracking/include/form_template.html" with field=form.description %}
-								
-			</fieldset>			
-
-			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">
-					{{command}} Record
-				</button>
-				<a href="{{project.get_absolute_url}}" class="btn">
-					Cancel
-				</a>
-			</div>
-		</form>
-		
-	</div>
+{% if form.non_field_errors %}
+<div>
+    <strong>ERROR:</strong> {{ form.non_field_errors|striptags }}
 </div>
+{% endif %}
+
+<form action="" method="post">{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Submit" />
+</form>
 {% endblock %}
 
-{% block extrascript %}
-	<script type="text/javascript" src="{% static "js/bootstrap-datepicker.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/bootstrap-timepicker.min.js" %}"></script>
-	
-	<script type="text/javascript">
-	
-		$(function() {
-			
-			$('#id_start_time_0_picker').datepicker();
-			$('#id_start_time_1').timepicker({
-                minuteStep: 1,
-                template: 'modal',
-                showSeconds: false,
-                showMeridian: false
-            });
-            $('#id_end_time_0_picker').datepicker();
-			$('#id_end_time_1').timepicker({
-                minuteStep: 1,
-                template: 'modal',
-                showSeconds: false,
-                showMeridian: false,
-                defaultTime: false,
-            });
-		});
-	</script>
-{% endblock %}

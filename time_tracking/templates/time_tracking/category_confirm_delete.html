@@ -2,18 +2,18 @@
 
 {% block content %}
 
-<p>
-	Are you sure you want to delete?
-</p>
+<div>
+    <p>
+        Are you sure you want to delete?
+    </p>
 
-<form method="post" action=".">
-	{% csrf_token %}
-		
-	<button type="submit">
-		Yes
-	</button>
+    <form method="post" action=".">
+        {% csrf_token %}
 
-	<a href="{{ project.get_absolute_url }}">No</a>
-</form>
+        <button type="submit">
+            Yes
+        </button>
+    </form>
+</div>
 
 {% endblock %}

@@ -1,11 +1,9 @@
 {% extends "time_tracking/base.html" %}
 
 {% block menu %}
-<div class="well" style="padding: 8px 0;">
-	<ul class="nav nav-list">
-		<li class="nav-header">
-			Commands
-		</li>
+<div>
+    <p>Commands</p>
+	<ul>
 		<li>
 			<a href="{% url 'project_create_view' %}">Add Project</a>
 		</li>
@@ -14,47 +12,41 @@
 {% endblock %}
 
 {% block content %}
-<div class="row-fluid">
 
-	<div class="span5">
-		<div class="well well-small">
-			<h3>Projects</h3>
-			{% if active_projects %}
-				<dl>
-				{% for o in active_projects %}
+<div>
+    <h3>Projects</h3>
+    {% if active_projects %}
+        <dl>
+        {% for o in active_projects %}
 
-				<dt>
-					<a href="{{ o.get_absolute_url }}">{{o.name}}</a>
-				</dt>
-				<dd>
-					{{o.description|truncatewords_html:10}}
-				</dd>
+        <dt>
+            <a href="{{ o.get_absolute_url }}">{{o.name}}</a>
+        </dt>
+        <dd>
+            {{o.description|truncatewords_html:10}}
+        </dd>
 
-				{% endfor %}
-				</dl>
-			{% endif %}
-		</div>
-	</div>
-
-	<div class="span5">
-		<div class="well well-small">
-			<h3>Templates</h3>
-			{% if templates %}
-				<dl>
-				{% for o in templates %}
-
-				<dt>
-					<a href="{{ o.get_absolute_url }}">{{o.name}}</a>
-				</dt>
-				<dd>
-					{{o.description|truncatewords_html:10}}
-				</dd>
-
-				{% endfor %}
-				</dl>
-			{% endif %}
-		</div>
-	</div>
-
+        {% endfor %}
+        </dl>
+    {% endif %}
 </div>
+
+<div>
+    <h3>Templates</h3>
+    {% if templates %}
+        <dl>
+        {% for o in templates %}
+
+        <dt>
+            <a href="{{ o.get_absolute_url }}">{{o.name}}</a>
+        </dt>
+        <dd>
+            {{o.description|truncatewords_html:10}}
+        </dd>
+
+        {% endfor %}
+        </dl>
+    {% endif %}
+</div>
+
 {% endblock %}

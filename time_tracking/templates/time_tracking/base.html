@@ -5,62 +5,50 @@
 {% block menu %}
 
 {% if project %}
-<div>
-	<ul>
-		<li>
-			Commands
-		</li>
-		<li>
-			<a href="{{project.get_absolute_url}}">Overview</a>
-		</li>
-		{% if project.active %}
-		<li>
-			<a href="{{ project.get_add_record_url }}">Add New Record</a>
-		</li>
-		{% endif %}
-		<li>
-			<a href="{{ project.get_edit_url }}">Edit Project</a>
-		</li>
-		<li>
-			<a href="{{ project.get_delete_url }}">Delete Project</a>
-		</li>
-		<li>
-			<a href="{{ project.get_copy_project_url }}">Copy Project</a>
-		</li>
-	</ul>
-</div>
+<p>Commands</p>
+<ul>
+    <li>
+        <a href="{{project.get_absolute_url}}">Overview</a>
+    </li>
+    {% if project.active %}
+    <li>
+        <a href="{{ project.get_add_record_url }}">Add New Record</a>
+    </li>
+    {% endif %}
+    <li>
+        <a href="{{ project.get_edit_url }}">Edit Project</a>
+    </li>
+    <li>
+        <a href="{{ project.get_delete_url }}">Delete Project</a>
+    </li>
+    <li>
+        <a href="{{ project.get_copy_project_url }}">Copy Project</a>
+    </li>
+</ul>
 
-<div>
-	<ul>
-		<li>
-			Categories
-		</li>
-		{% for category in project.category_set.all %}
-		<li><a href="{{category.get_absolute_url}}">{{category}}</a></li>
-		{% endfor %}
-		<li>
-			<a href="{{ project.get_add_category_url }}">Add Category</a>
-		</li>
-	</ul>
-</div>
 
-<div>
-	<ul>
-		<li>
-			Locations
-		</li>
-		{% for location in locations %}
-		<li>
-			<a href="{{location.get_absolute_url}}">{{location}}</a>
-		</li>
-		{% endfor %}
-		<li>
-			<a href="{{ project.get_add_location_url }}">Add Location</a>
-		</li>
-	</ul>
-</div>
+<p>Categories</p>
+<ul>
+	{% for category in project.category_set.all %}
+	<li><a href="{{category.get_absolute_url}}">{{category}}</a></li>
+	{% endfor %}
+	<li>
+		<a href="{{ project.get_add_category_url }}">Add Category</a>
+	</li>
+</ul>
+
+<p>Locations</p>
+<ul>
+    {% for location in locations %}
+    <li>
+        <a href="{{location.get_absolute_url}}">{{location}}</a>
+    </li>
+    {% endfor %}
+    <li>
+        <a href="{{ project.get_add_location_url }}">Add Location</a>
+    </li>
+</ul>
 
 {% endif %}
-
 
 {% endblock %}
