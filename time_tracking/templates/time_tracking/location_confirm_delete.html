@@ -2,22 +2,18 @@
 
 {% block content %}
 
-<div class="row">
-	<div class="span4 offset4">
-		<p>
-			Are you sure you want to delete?
-		</p>
+<div>
+    <p>
+        Are you sure you want to delete?
+    </p>
 
-		<form method="post" action=".">
-			{% csrf_token %}
-				
-			<button type="submit" class="btn btn-danger">
-				Yes
-			</button>
+    <form method="post" action=".">
+        {% csrf_token %}
 
-			<a href="{{ project.get_absolute_url }}" class="btn">No</a>
-		</form>
-	</div>
+        <button type="submit">
+            Yes
+        </button>
+    </form>
 </div>
 
 {% endblock %}
